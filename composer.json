@@ -1,0 +1,13 @@
+{
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "git@github.com:CarltonSoftware/tabs-api-client.git"
+		}
+	],
+	"require": {
+		"carltonsoftware/tabs-api-client": "dev-develop",
+		"aw/formfields": "dev-master"
+	}
+}
+
