@@ -137,7 +137,7 @@ if (count($formArray) > 0) {
     <div class="container">
         <div class="row">
             <div class="page-header">
-                <h1>Api Config Form</h1>
+                <h1>Api Config Form <small>for <?php echo $info->getApiRoot(); ?></small></h1>
             </div>
             
             <h2>Existing Users</h2>
