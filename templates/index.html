@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Api Config Form <small>for {{ info.getApiRoot() }}</small></h1>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <h3>Existing Users</h3>
+            <div>
+                <table class="table table-striped" id="usertable">
+                    <thead>
+                        <tr>
+                            <th>User Name</th>
+                            <th>Email</th>
+                            <th>Secret</th>
+                            <th>Roles</th>
+                            <th>Delete?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if userException == false %}
+                            {% for user in users %}
+                                <tr>
+                                    <td>{{ user.getKey }}</td>
+                                    <td>{{ user.getEmail }}</td>
+                                    <td>{{ user.getSecret }}</td>
+                                    <td>
+                                        {% for role in user.getRoles %}
+                                            {{ role }}<br>
+                                        {% endfor %}
+                                    </td>
+                                    <td><a href="#" data-key="{{ user.getKey }}" data-action="delete" class="btn btn-danger btn-sm btn-delete">Delete</a></td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="5">{{ userException }}</td></tr>
+                        {% endif %}                    
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <h3>New Users</h3>
+            {{ form|raw }}
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript %}
+
+    // Delete functionality
+    jQuery(document).ready(function() {
+        // Delete button actions
+        jQuery('body').delegate('.btn-danger', 'click', function() {
+            $btn = jQuery(this);
+            $tr = $btn.parent().parent();
+            bootbox.confirm("Are you sure?", function(result) {
+                if (result === true) {
+                    jQuery.postJSON('', $btn.data(), function(res) {
+                        if (res.status === 'success') {
+                            $tr.remove();
+                        } else {
+                            bootbox.alert(res.message);
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Submit handler
+        jQuery('#formsubmit').click(function() {
+            $brands = jQuery('.additional-brands input:checked');
+            jQuery('.alert, .help-block').remove();
+            jQuery('.has-error').removeClass('has-error');
+            if ($brands.size() > 0) {
+                jQuery.each($brands, function (index, cb) {
+                    $cb = jQuery(cb);
+                    createUser(
+                        $cb.attr('name'),
+                        function(json) {
+                            $ele = jQuery('input#' + json.brandcode);
+                            if (json.status === 'success') {
+                                $ele.parent().append(
+                                    '<span class="label label-success"> - created!</span>'
+                                );
+                            } else {
+                                $ele.parent().append(
+                                    '<span class="label label-danger">' + json.message + '</span>'
+                                );
+                            }
+                        }
+                    );
+                });
+            } else {
+                createUser(
+                    '{{ brandcode }}',
+                    function(json) {
+                        jQuery('#apiuserform').prepend(
+                            '<div class="alert alert-' + json.status + '">' + json.message + '</div>'
+                        );
+                        if (json.status === 'success') {
+                            refreshUsers()
+                        } else {
+                            jQuery.each(json.fields, function (key, value) {
+                                jQuery('#' + key).parent().append(
+                                    '<span class="help-block">' + value + '</span>'
+                                ).parent().addClass('has-error');
+                            });
+                        }
+                    }
+                );
+            }
+            return false;
+        });
+    });
+    
+    function createUser(brandcode, callback) {
+        jQuery.postJSON(
+            '?brandcode=' + brandcode, 
+            jQuery('#apiuserform').serialize(),
+            callback
+        );
+    }
+    
+    function refreshUsers() {
+        $.ajax('{{ baseUrl() }}',{
+            dataFilter: function(data, type) {
+                type = type || 'text';
+                if(type == 'html' || type == 'text') {
+                    return data.replace(/<script.*?>([\w\W\d\D\s\S\0\n\f\r\t\v\b\B]*?)<\/script>/gi, '');
+                }
+                return data;
+            }, 
+            success: function(response) {
+                jQuery('#usertable').parent().html(
+                    jQuery('#usertable', $.parseHTML(response)).parent().html()
+                );
+            }
+        });
+    }
+
+{% endblock %}

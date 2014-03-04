@@ -1,23 +1,21 @@
 <?php
 
-// Include libraries and objects
-require_once 'vendor/autoload.php';
+require 'vendor/autoload.php';
 require_once 'ApiUserForm.php';
 require_once 'config.php';
 
-// Additional brands
-$brands = array(
-    'no' => 'Norfolk',
-    'ss' => 'Suffolk',
-    'sl' => 'Southwold',
-    'fr' => 'Freedom',
-    'wy' => 'Wyke',
-    'ma' => 'Marsdens',
-    'nd' => 'Completely',
-    'wa' => 'Wales Holidays',
-    'in' => 'Ingrid',
-    'hc' => 'Holiday Cotts',
-    'zz' => 'Dummy'
+// Get api info
+$info = \tabs\api\utility\Utility::getApiInformation();
+
+$app = new \Slim\Slim(
+    array(
+        'view' => new \Slim\Views\Twig(),
+        'templates.path' => 'templates'
+    )
+);
+
+$app->view->parserExtensions = array(
+    new \Slim\Views\TwigExtension(),
 );
 
 // Create userform
@@ -27,18 +25,22 @@ $form = ApiUserForm::factory(
         'method' => 'post',
         'id' => 'apiuserform'
     ),
-    $formArray,
-    $brands
+    $app->request->post(),
+    (empty($brands) ? array() : $brands)
 );
 
-// Perform delete
-if (isset($formArray['action'])
-    && isset($formArray['key'])
-) {
-    switch ($formArray['action']) {
-    case 'delete':
+// Adding a user
+$app->post('/', function() use ($app, $form, $brandcode, $info) {
+
+    $status = 'danger';
+    $message = 'Unable to create user';
+    $fields = array();
+    
+    if ($app->request->post('action') 
+        && $app->request->post('action') == 'delete'
+    ) {
         try {
-            $user = \tabs\api\core\ApiUser::getUser($formArray['key']);
+            $user = \tabs\api\core\ApiUser::getUser($app->request->post('key'));
             
             if (!$user) {
                 throw new Exception('User not found', 500);
@@ -49,281 +51,127 @@ if (isset($formArray['action'])
             }
             
             $user->delete();
-            die(json_encode(array('status' => 'ok')));
+            $status = 'success';
+            $message = 'User Deleted!';
         } catch (Exception $ex) {
-            die(
-                json_encode(
-                    array(
-                        'status' => 'error', 
-                        'message' => $ex->getMessage()
-                    )
-                )
-            );
+            $status = 'danger';
+            $message = $ex->getMessage();
         }
-        break;
-    case 'add':    
-        $form->validate();
+    } else {
+        $form->validate();           
         if ($form->isValid()) {
             try {
-                $user = new \tabs\api\core\ApiUser();
-                $user->setKey($formArray['key']);
-                $user->setEmail($formArray['email']);
-                $user->create();
-                die(
-                    json_encode(
-                        array(
-                            'status' => 'ok',
-                            'brandcode' => $brandcode
-                        )
-                    )
-                );
+                createUser($app->request->post('key'), $app->request->post('email'), $info);
+                $status = 'success';
+                $message = 'User Created!';
             } catch (Exception $ex) {
-                die(
-                    json_encode(
-                        array(
-                            'status' => 'error',
-                            'error' => $ex->getMessage(),
-                            'brandcode' => $brandcode
-                        )
-                    )
-                );
+                $status = 'danger';
+                $message = $ex->getMessage();
             }
         } else {
-            die(
-                json_encode(
-                    array(
-                        'status' => 'error',
-                        'error' => implode(',', array_keys($form->getErrors())),
-                        'brandcode' => $brandcode
-                    )
-                )
-            );
+            $fields = $form->getErrors();
         }
-        break;
     }
-}
-
-// Get api info
-$info = \tabs\api\utility\Utility::getApiInformation();
-
-// Set template to bootstrap
-$form->each('getType', 'label', function($ele) {
-    $ele->setClass('control-label')
-        ->setTemplate(
-            '<div class="form-group">
-                <label{implodeAttributes}>{getLabel}</label>
-                <div class="">
-                    {renderChildren}
-                </div>
-                <!--{error}-->
-            </div>'
-        );
-});
-
-// Set template to bootstrap
-$form->each('getType', 'text', function($ele) {
-    $ele->setClass('form-control');
-});
-
-// Set the submit button template
-$form->getElementBy('getType', 'submit')
-->setClass('btn btn-primary btn-lg')
-->setTemplate(
-    '<div class="form-actions" style="margin-bottom: 10px;">
-        <input type="{getType}"{implodeAttributes}>
-    </div>'
-);
-
-// Set the template for checkboxes
-$form->each('getType', 'checkbox', function ($ele) {
-    $ele->getParent()
-        ->setTemplate(
-        '<div class="checkbox">
-            <label{implodeAttributes}>
-                {getLabel}
-                {renderChildren}
-            </label>
-            <!--{error}-->
-        </div>'
+    
+    die(
+        json_encode(
+            array(
+                'status' => $status, 
+                'message' => $message, 
+                'fields' => $fields,
+                'brandcode' => $brandcode
+            )
+        )
     );
 });
 
-// Set the validation call back
-$form->setCallback(
-    function($form, $ele, $e) {
-        $ele->getParent()->setTemplate(
-            str_replace(
-                '<!--{error}-->', 
-                sprintf(
-                    '<span class="help-block">%s</span>',
-                    $e->getMessage()
-                ),
-                $ele->getParent()->getTemplate()
-            )
-        );
-        $ele->getParent()->setTemplate(
-            str_replace(
-                'form-group', 
-                'form-group has-error', 
-                $ele->getParent()->getTemplate()
-            )
-        );
-    }
-);
+// Define routes
+$app->get('/', function () use ($app, $info, $form, $brandcode) {
 
-$result = '';
-if (count($formArray) > 0) {
-    $form->validate();                        
-    if ($form->isValid()) {
-        try {
-            $user = new \tabs\api\core\ApiUser();
-            $user->setKey($formArray['key']);
-            $user->setEmail($formArray['email']);
-            $user->create();
-            $result = sprintf(
-                '<div class="alert alert-success">User created!</div>'
+    // Set template to bootstrap
+    $form->each('getType', 'label', function($ele) {
+        $ele->setClass('control-label')
+            ->setTemplate(
+                '<div class="form-group">
+                    <label{implodeAttributes}>{getLabel}</label>
+                    <div class="">
+                        {renderChildren}
+                    </div>
+                </div>'
             );
-        } catch (Exception $ex) {
-            $result = sprintf(
-                '<div class="alert alert-danger">%s</div>',
-                $ex->getMessage()
-            );
-        }
+    });
+
+    // Set template to bootstrap
+    $form->each('getType', 'text', function($ele) {
+        $ele->setClass('form-control');
+    });
+
+    // Set the submit button template
+    $form->getElementBy('getType', 'submit')
+    ->setClass('btn btn-primary btn-lg')
+    ->setTemplate(
+        '<div class="form-actions" style="margin-bottom: 10px;">
+            <input type="{getType}"{implodeAttributes}>
+        </div>'
+    );
+
+    // Set the template for checkboxes
+    $form->each('getType', 'checkbox', function ($ele) {
+        $ele->getParent()
+            ->setTemplate(
+            '<div class="checkbox">
+                <label{implodeAttributes}>
+                    {getLabel}
+                    {renderChildren}
+                </label>
+            </div>'
+        );
+    });
+
+    $userException = false;
+    $users = array();
+    try {
+        $users = \tabs\api\core\ApiUser::getUsers();
+    } catch (Exception $e) {
+        $userException = $e->getMessage();
     }
+
+    // Render index view
+    $app->render(
+        'index.html',
+        array(
+            'info' => $info,
+            'form' => $form,
+            'brandcode' => $brandcode,
+            'userException' => $userException,
+            'users' => $users
+        )
+    );
+});
+
+// Run app
+$app->run();
+
+/**
+ * Create an API User
+ *
+ * @param string $key
+ * @param string $email
+ *
+ * @return void
+ */
+function createUser($key, $email, $info)
+{
+    $user = new \tabs\api\core\ApiUser();
+    $user->setKey($key);
+    $user->setEmail($email);
+    $user->create();
+        
+    mail(
+        'alex@carltonsoftware.co.uk', 
+        'New user created on the api',
+        "New user created with key {$user->getKey()} and email {$user->getEmail()} created for api {$info->getApiRoot()}."
+    );
+    
+    return $user;
 }
-
-?>
-<!DOCTYPE HTML>
-<html lang="en-US">
-<head>
-    <meta charset="UTF-8">
-    <title>API User Config</title>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container">
-        <div class="row">
-            <div class="page-header">
-                <h1>Api Config Form <small>for <?php echo $info->getApiRoot(); ?></small></h1>
-            </div>
-            
-            <h2>Existing Users</h2>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>User Name</th>
-                        <th>Email</th>
-                        <th>Secret</th>
-                        <th>Roles</th>
-                        <th>Delete?</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                        try {
-                            $users = \tabs\api\core\ApiUser::getUsers();
-                            foreach ($users as $user) {
-                                echo sprintf(
-                                    '<tr>'
-                                        . '<td>%s</td>'
-                                        . '<td>%s</td>'
-                                        . '<td>%s</td>'
-                                        . '<td>%s</td>'
-                                        . '<td><a href="#" data-key="%s" data-action="delete" class="btn btn-danger btn-sm btn-delete">Delete</a></td>'
-                                    . '</tr>',
-                                    $user->getKey(),
-                                    $user->getEmail(),
-                                    $user->getSecret(),
-                                    implode(',', $user->getRoles()),
-                                    $user->getKey()
-                                );
-                            }
-                        } catch (Exception $ex) {
-                            echo sprintf(
-                                '<tr><td colspan="5">%s</td></tr>',
-                                $ex->getMessage()
-                            );
-                        }
-                    ?>
-                </tbody>
-            </table>
-            <?php
-                echo $result;
-            ?>
-        </div>
-        <div class="row">
-            <div class="well">
-                <?php
-                   echo $form;
-                ?>
-            </div>
-        </div>
-    </div>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    <script src="assets/js/bootbox.min.js"></script>
-    <script type="text/javascript">
-        
-        // Delete functionality
-        jQuery(document).ready(function() {
-            // Delete button actions
-            jQuery('.btn-danger').click(function() {
-                $btn = jQuery(this);
-                $tr = $btn.parent().parent();
-                bootbox.confirm("Are you sure?", function(result) {
-                    if (result === true) {
-                        console.log();
-                        jQuery.postJSON('', $btn.data(), function(res) {
-                            if (res.status === 'ok') {
-                                $tr.remove();
-                            } else {
-                                bootbox.alert(res.message);
-                            }
-                        });
-                    }
-                });
-            });
-            
-            // Submit handler
-            jQuery('#formsubmit').click(function() {
-                $brands = jQuery('.additional-brands input:checked');
-                jQuery('input[name=action], span.response').remove();
-                if ($brands.size() > 0) {
-                    jQuery('#apiuserform').append('<input type="hidden" name="action" value="add">');
-                    jQuery.each($brands, function (index, cb) {
-                        $cb = jQuery(cb);
-                        brandcode = $cb.attr('name');
-                        jQuery.postJSON(
-                            '?brandcode=' + brandcode, 
-                            jQuery('#apiuserform').serialize(),
-                            function(json) {
-                                $ele = jQuery('input#' + json.brandcode);
-                                
-                                if (json.status === 'ok') {
-                                    $ele.parent().append('<span class="response"> - created!</span>');
-                                } else {
-                                    $ele.parent().append('<span class="response">' + json.error + '</span>');
-                                }
-                            }
-                        );
-                    });
-                    return false;
-                } else {
-                    return true;
-                }
-            });
-        });
-        
-        
-        /**
-         * Shortcut to post json data to a url
-         * @param url A string containing the URL to which the request is sent. (put any get parameters into the url)
-         * @param data A map or string that is sent to be posted to the server with the request.
-         * @param callback A callback function that is executed if the request succeeds.
-         */
-        jQuery.postJSON = function(url, data, callback) {
-            jQuery.post(url, data, callback, "json");
-        }
-    </script>
-</body>
-</html>

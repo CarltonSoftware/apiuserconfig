@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title|default('Api User Config') }}</title>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="container">
+        {% block content %}
+        
+        {% endblock %}
+    </div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="{{ siteUrl('assets/js/bootbox.min.js') }}"></script>
+    <script type="text/javascript">        
+        /**
+         * Shortcut to post json data to a url
+         * @param url A string containing the URL to which the request is sent. (put any get parameters into the url)
+         * @param data A map or string that is sent to be posted to the server with the request.
+         * @param callback A callback function that is executed if the request succeeds.
+         */
+        jQuery.postJSON = function(url, data, callback) {
+            jQuery.post(url, data, callback, "json");
+        }
+        {% block javascript %}{% endblock %}
+        
+    </script>
+</body>
+</html>
