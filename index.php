@@ -5,13 +5,30 @@ require_once 'vendor/autoload.php';
 require_once 'ApiUserForm.php';
 require_once 'config.php';
 
+// Additional brands
+$brands = array(
+    'no' => 'Norfolk',
+    'ss' => 'Suffolk',
+    'sl' => 'Southwold',
+    'fr' => 'Freedom',
+    'wy' => 'Wyke',
+    'ma' => 'Marsdens',
+    'nd' => 'Completely',
+    'wa' => 'Wales Holidays',
+    'in' => 'Ingrid',
+    'hc' => 'Holiday Cotts',
+    'zz' => 'Dummy'
+);
+
 // Create userform
 $form = ApiUserForm::factory(
     array(
         'class' => 'form',
-        'method' => 'post'
+        'method' => 'post',
+        'id' => 'apiuserform'
     ),
-    $formArray
+    $formArray,
+    $brands
 );
 
 // Perform delete
@@ -44,8 +61,44 @@ if (isset($formArray['action'])
             );
         }
         break;
-    case 'add': 
-        
+    case 'add':    
+        $form->validate();
+        if ($form->isValid()) {
+            try {
+                $user = new \tabs\api\core\ApiUser();
+                $user->setKey($formArray['key']);
+                $user->setEmail($formArray['email']);
+                $user->create();
+                die(
+                    json_encode(
+                        array(
+                            'status' => 'ok',
+                            'brandcode' => $brandcode
+                        )
+                    )
+                );
+            } catch (Exception $ex) {
+                die(
+                    json_encode(
+                        array(
+                            'status' => 'error',
+                            'error' => $ex->getMessage(),
+                            'brandcode' => $brandcode
+                        )
+                    )
+                );
+            }
+        } else {
+            die(
+                json_encode(
+                    array(
+                        'status' => 'error',
+                        'error' => implode(',', array_keys($form->getErrors())),
+                        'brandcode' => $brandcode
+                    )
+                )
+            );
+        }
         break;
     }
 }
@@ -76,10 +129,24 @@ $form->each('getType', 'text', function($ele) {
 $form->getElementBy('getType', 'submit')
 ->setClass('btn btn-primary btn-lg')
 ->setTemplate(
-    '<div class="form-actions">
+    '<div class="form-actions" style="margin-bottom: 10px;">
         <input type="{getType}"{implodeAttributes}>
     </div>'
 );
+
+// Set the template for checkboxes
+$form->each('getType', 'checkbox', function ($ele) {
+    $ele->getParent()
+        ->setTemplate(
+        '<div class="checkbox">
+            <label{implodeAttributes}>
+                {getLabel}
+                {renderChildren}
+            </label>
+            <!--{error}-->
+        </div>'
+    );
+});
 
 // Set the validation call back
 $form->setCallback(
@@ -199,6 +266,7 @@ if (count($formArray) > 0) {
         
         // Delete functionality
         jQuery(document).ready(function() {
+            // Delete button actions
             jQuery('.btn-danger').click(function() {
                 $btn = jQuery(this);
                 $tr = $btn.parent().parent();
@@ -214,6 +282,35 @@ if (count($formArray) > 0) {
                         });
                     }
                 });
+            });
+            
+            // Submit handler
+            jQuery('#formsubmit').click(function() {
+                $brands = jQuery('.additional-brands input:checked');
+                jQuery('input[name=action], span.response').remove();
+                if ($brands.size() > 0) {
+                    jQuery('#apiuserform').append('<input type="hidden" name="action" value="add">');
+                    jQuery.each($brands, function (index, cb) {
+                        $cb = jQuery(cb);
+                        brandcode = $cb.attr('name');
+                        jQuery.postJSON(
+                            '?brandcode=' + brandcode, 
+                            jQuery('#apiuserform').serialize(),
+                            function(json) {
+                                $ele = jQuery('input#' + json.brandcode);
+                                
+                                if (json.status === 'ok') {
+                                    $ele.parent().append('<span class="response"> - created!</span>');
+                                } else {
+                                    $ele.parent().append('<span class="response">' + json.error + '</span>');
+                                }
+                            }
+                        );
+                    });
+                    return false;
+                } else {
+                    return true;
+                }
             });
         });
         

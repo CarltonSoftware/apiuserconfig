@@ -38,7 +38,8 @@ class ApiUserForm extends \aw\formfields\forms\StaticForm
      */
     public static function factory(
         $attributes = array(),
-        $formValues = array()
+        $formValues = array(),
+        $brands = array()
     ) {
         // New form object
         $form = new \aw\formfields\forms\Form($attributes, $formValues);        
@@ -81,10 +82,32 @@ class ApiUserForm extends \aw\formfields\forms\StaticForm
         $form->addChild(
             new \aw\formfields\fields\SubmitButton(
                 array(
-                    'value' => 'Create User'
+                    'value' => 'Create User',
+                    'id' => 'formsubmit'
                 )
             )
         );
+        
+        // Add brand checkboxes for additional roleouts
+        if (count($brands) > 0) {
+            // Fieldset
+            $fs = \aw\formfields\fields\Fieldset::factory(
+                'Add to additional brands?',
+                array(
+                    'class' => 'additional-brands'
+                )
+            );
+            
+            foreach ($brands as $brandCode => $brandName) {
+                $fs->addChild(
+                    self::getNewLabelAndCheckboxField(
+                        $brandCode
+                    )->setLabel($brandName)
+                );
+            }
+            
+            $form->addChild($fs);
+        }
         
         return $form->mapValues();
     }
