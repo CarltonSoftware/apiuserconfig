@@ -57,6 +57,26 @@ $app->post('/', function() use ($app, $form, $brandcode, $info) {
             $status = 'danger';
             $message = $ex->getMessage();
         }
+    } else if ($app->request->post('action') 
+        && $app->request->post('action') == 'delete-setting'
+    ) {
+        try {
+            $setting = \tabs\api\core\ApiSetting::getSetting(
+                $app->request->post('key'),
+                $app->request->post('brandcode')
+            );
+            
+            if (!$setting) {
+                throw new Exception('Setting not found', 500);
+            }
+            
+            $setting->delete();
+            $status = 'success';
+            $message = 'Setting Deleted!';
+        } catch (Exception $ex) {
+            $status = 'danger';
+            $message = $ex->getMessage();
+        }
     } else {
         $form->validate();           
         if ($form->isValid()) {
@@ -121,7 +141,9 @@ $app->get('/', function () use ($app, $info, $form, $brandcode) {
             ->setTemplate(
             '<div class="checkbox">
                 <label{implodeAttributes}>
-                    {getLabel}
+                    <a href="?brandcode={getFor}">
+                        {getLabel}
+                    </a>
                     {renderChildren}
                 </label>
             </div>'
@@ -136,6 +158,14 @@ $app->get('/', function () use ($app, $info, $form, $brandcode) {
         $userException = $e->getMessage();
     }
 
+    $settingException = false;
+    $settings = array();
+    try {
+        $settings = \tabs\api\core\ApiSetting::getSettings();
+    } catch (Exception $e) {
+        $settingException = $e->getMessage();
+    }
+
     // Render index view
     $app->render(
         'index.html',
@@ -144,7 +174,9 @@ $app->get('/', function () use ($app, $info, $form, $brandcode) {
             'form' => $form,
             'brandcode' => $brandcode,
             'userException' => $userException,
-            'users' => $users
+            'users' => $users,
+            'settingException' => $settingException,
+            'settings' => $settings
         )
     );
 });

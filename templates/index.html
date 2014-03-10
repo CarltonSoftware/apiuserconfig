@@ -39,6 +39,32 @@
                     </tbody>
                 </table>
             </div>
+            <h3>API Settings</h3>
+            <div>
+                <table class="table table-striped" id="settingtable">
+                    <thead>
+                        <tr>
+                            <th>Setting</th>
+                            <th>Brand</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if settingException == false %}
+                            {% for setting in settings %}
+                                <tr>
+                                    <td>{{ setting.getName }}</td>
+                                    <td>{{ setting.getBrandcode }}</td>
+                                    <td>{{ setting.getValue }}</td>
+                                    <td><a href="#" data-key="{{ setting.getName }}" data-brandcode="{{ setting.getBrandcode }}" data-action="delete-setting" class="btn btn-danger btn-sm btn-delete">Delete</a></td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="4">{{ settingException }}</td></tr>
+                        {% endif %}                    
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="col-md-3">
             <h3>New Users</h3>
@@ -83,7 +109,7 @@
                             $ele = jQuery('input#' + json.brandcode);
                             if (json.status === 'success') {
                                 $ele.parent().append(
-                                    '<span class="label label-success"> - created!</span>'
+                                    '<span class="label label-success">Created!</span>'
                                 );
                             } else {
                                 $ele.parent().append(
@@ -125,7 +151,7 @@
     }
     
     function refreshUsers() {
-        $.ajax('{{ baseUrl() }}',{
+        $.ajax('{{ baseUrl() }}?brandcode={{ brandcode }}',{
             dataFilter: function(data, type) {
                 type = type || 'text';
                 if(type == 'html' || type == 'text') {
