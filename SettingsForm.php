@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Api User Config form object
+ * Settings Config form object
  *
  * PHP Version 5.3
  *
@@ -14,7 +14,7 @@
  */
 
 /**
- * Api User Config form object.  Extends the generic form and provides a static helper
+ * Settings Config form object.  Extends the generic form and provides a static helper
  * method to build the form object
  *
  * PHP Version 5.3
@@ -26,37 +26,37 @@
  * @license   http://www.php.net/license/3_01.txt  PHP License 3.01
  * @link      http://www.github.com/alexwyett
  */
-class ApiUserForm extends \aw\formfields\forms\StaticForm
+class SettingsForm extends \aw\formfields\forms\StaticForm
 {
     /**
      * Constructor
      * 
-     * @param array $attributes Form attributes
-     * @param array $formValues Form Values
-     * @param array $brands     Brands
+     * @param array  $attributes Form attributes
+     * @param array  $formValues Form Values
+     * @param string $brandcode  Brandcode
      * 
      * @return void
      */
     public static function factory(
         $attributes = array(),
         $formValues = array(),
-        $brands = array()
+        $brandcode = 'ZZ'
     ) {
         // New form object
         $form = new \aw\formfields\forms\Form($attributes, $formValues);        
         
         // Fieldset
         $fs = \aw\formfields\fields\Fieldset::factory(
-            'Create an Api User',
+            'Add a new Setting',
             array(
-                'class' => 'user-details'
+                'class' => 'setting-details'
             )
         );
 
         // Add key field
         $fs->addChild(
             self::getNewLabelAndTextField(
-                'User Name'
+                'Setting Name'
             )->getElementBy('getType', 'text')
                 ->setName('key')
                 ->setId('key')
@@ -65,15 +65,33 @@ class ApiUserForm extends \aw\formfields\forms\StaticForm
                 ->getParent()
         );
 
-        // Add email field
+        // Add value field
         $fs->addChild(
             self::getNewLabelAndTextField(
-                'Email Address'
+                'Value'
             )->getElementBy('getType', 'text')
-                ->setName('email')
-                ->setId('email')
-                ->setRule('ValidEmail', true)
+                ->setRule('ValidString', true)
                 ->getParent()
+        );
+        
+        // Add brandcode
+        $fs->addChild(
+            new aw\formfields\fields\HiddenInput(
+                'brandcode', 
+                array(
+                    'value' => $brandcode
+                )
+            )
+        );
+        
+        // Add action
+        $fs->addChild(
+            new aw\formfields\fields\HiddenInput(
+                'action', 
+                array(
+                    'value' => 'add-setting'
+                )
+            )
         );
         
         // Add fieldset to form
@@ -83,32 +101,11 @@ class ApiUserForm extends \aw\formfields\forms\StaticForm
         $form->addChild(
             new \aw\formfields\fields\SubmitButton(
                 array(
-                    'value' => 'Create User',
-                    'id' => 'formsubmit'
+                    'value' => 'Add Setting',
+                    'id' => 'formsubmitsetting'
                 )
             )
         );
-        
-        // Add brand checkboxes for additional roleouts
-        if (count($brands) > 0) {
-            // Fieldset
-            $fs = \aw\formfields\fields\Fieldset::factory(
-                'Add to additional brands?',
-                array(
-                    'class' => 'additional-brands'
-                )
-            );
-            
-            foreach ($brands as $brandCode => $brandName) {
-                $fs->addChild(
-                    self::getNewLabelAndCheckboxField(
-                        $brandCode
-                    )->setLabel($brandName)
-                );
-            }
-            
-            $form->addChild($fs);
-        }
         
         return $form->mapValues();
     }

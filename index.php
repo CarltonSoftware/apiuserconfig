@@ -2,6 +2,7 @@
 
 require 'vendor/autoload.php';
 require_once 'ApiUserForm.php';
+require_once 'SettingsForm.php';
 require_once 'config.php';
 
 // Get api info
@@ -23,74 +24,178 @@ $form = ApiUserForm::factory(
     array(
         'class' => 'form',
         'method' => 'post',
-        'id' => 'apiuserform'
+        'id' => 'apiuserform',
+        'action' => 'index.php/adduser'
     ),
     $app->request->post(),
     (empty($brands) ? array() : $brands)
 );
 
-// Adding a user
-$app->post('/', function() use ($app, $form, $brandcode, $info) {
+// Create Settings Form
+$sForm = SettingsForm::factory(
+    array(
+        'class' => 'form',
+        'method' => 'post',
+        'id' => 'settingsform',
+        'action' => 'index.php/addsetting'
+    ),
+    $app->request->post(),
+    $brandcode
+);
 
+// Add user submission
+$app->post('/adduser', function() use ($app, $form, $brandcode, $info) {
     $status = 'danger';
     $message = 'Unable to create user';
     $fields = array();
     
-    if ($app->request->post('action') 
-        && $app->request->post('action') == 'delete'
-    ) {
+    $form->validate();        
+    
+    if ($form->isValid()) {
         try {
-            $user = \tabs\api\core\ApiUser::getUser($app->request->post('key'));
-            
-            if (!$user) {
-                throw new Exception('User not found', 500);
-            }
-            
-            if ($user->getKey() == tabs\api\client\ApiClient::getApi()->getApiKey()) {
-                throw new Exception('Cant delete this user!', 500);
-            }
-            
-            $user->delete();
+            createUser($app->request->post('key'), $app->request->post('email'), $info);
             $status = 'success';
-            $message = 'User Deleted!';
-        } catch (Exception $ex) {
-            $status = 'danger';
-            $message = $ex->getMessage();
-        }
-    } else if ($app->request->post('action') 
-        && $app->request->post('action') == 'delete-setting'
-    ) {
-        try {
-            $setting = \tabs\api\core\ApiSetting::getSetting(
-                $app->request->post('key'),
-                $app->request->post('brandcode')
-            );
-            
-            if (!$setting) {
-                throw new Exception('Setting not found', 500);
-            }
-            
-            $setting->delete();
-            $status = 'success';
-            $message = 'Setting Deleted!';
+            $message = 'User Created!';
         } catch (Exception $ex) {
             $status = 'danger';
             $message = $ex->getMessage();
         }
     } else {
-        $form->validate();           
-        if ($form->isValid()) {
-            try {
-                createUser($app->request->post('key'), $app->request->post('email'), $info);
-                $status = 'success';
-                $message = 'User Created!';
-            } catch (Exception $ex) {
-                $status = 'danger';
-                $message = $ex->getMessage();
-            }
-        } else {
-            $fields = $form->getErrors();
+        $fields = $form->getErrors();
+    }
+    
+    die(
+        json_encode(
+            array(
+                'status' => $status, 
+                'message' => $message, 
+                'fields' => $fields,
+                'brandcode' => $brandcode
+            )
+        )
+    );
+});
+
+
+// Adding a user
+$app->post(
+    '/deleteuser', 
+    function() use (
+        $app, 
+        $form,
+        $brandcode
+    ) {
+
+    $status = 'danger';
+    $message = 'Unable to create user';
+    $fields = array();
+    
+    try {
+        $user = \tabs\api\core\ApiUser::getUser($app->request->post('key'));
+
+        if (!$user) {
+            throw new Exception('User not found', 500);
         }
+
+        if ($user->getKey() == tabs\api\client\ApiClient::getApi()->getApiKey()) {
+            throw new Exception('Cant delete this user!', 500);
+        }
+
+        $user->delete();
+        $status = 'success';
+        $message = 'User Deleted!';
+    } catch (Exception $ex) {
+        $status = 'danger';
+        $message = $ex->getMessage();
+    }
+    
+    die(
+        json_encode(
+            array(
+                'status' => $status, 
+                'message' => $message, 
+                'fields' => $fields,
+                'brandcode' => $brandcode
+            )
+        )
+    );
+});
+
+
+// Adding a user
+$app->post(
+    '/deletesetting', 
+    function() use (
+        $app, 
+        $brandcode
+    ) {
+
+    $status = 'danger';
+    $message = 'Unable to delete setting';
+    $fields = array();
+    
+    try {
+        $setting = \tabs\api\core\ApiSetting::getSetting(
+            $app->request->post('key'),
+            $app->request->post('brandcode')
+        );
+
+        if (!$setting) {
+            throw new Exception('Setting not found', 500);
+        }
+
+        $setting->delete();
+        $status = 'success';
+        $message = 'Setting Deleted!';
+    } catch (Exception $ex) {
+        $status = 'danger';
+        $message = $ex->getMessage();
+    }
+    
+    die(
+        json_encode(
+            array(
+                'status' => $status, 
+                'message' => $message, 
+                'fields' => $fields,
+                'brandcode' => $brandcode
+            )
+        )
+    );
+});
+
+
+// Adding a user
+$app->post(
+    '/addsetting', 
+    function() use (
+        $app, 
+        $sForm,
+        $brandcode
+    ) {
+
+    $status = 'danger';
+    $message = 'Unable to create setting';
+    $fields = array();
+    
+    $sForm->validate();
+    
+    if ($sForm->isValid()) {
+        try {
+            $setting = new \tabs\api\core\ApiSetting();
+            $setting->setBrandcode($brandcode);
+            $setting->setName($app->request->post('key'));
+            $setting->setValue($app->request->post('value'));
+            $setting->create();
+            
+            $status = 'success';
+            $message = 'Setting Added!';
+        } catch (Exception $ex) {
+            $status = 'danger';
+            $message = $ex->getMessage();
+        }
+    } else {
+        $fields = $sForm->getErrors();
     }
     
     die(
@@ -106,8 +211,87 @@ $app->post('/', function() use ($app, $form, $brandcode, $info) {
 });
 
 // Define routes
-$app->get('/', function () use ($app, $info, $form, $brandcode) {
+$app->get(
+    '/', 
+    function () use (
+        $app, 
+        $info, 
+        $form, 
+        $brandcode,
+        $sForm
+    ) {
+    
+    templateForm($form);
+    templateForm($sForm);
 
+    $userException = false;
+    $users = array();
+    try {
+        $users = \tabs\api\core\ApiUser::getUsers();
+    } catch (Exception $e) {
+        $userException = $e->getMessage();
+    }
+
+    $settingException = false;
+    $settings = array();
+    try {
+        $settings = \tabs\api\core\ApiSetting::getSettings();
+    } catch (Exception $e) {
+        $settingException = $e->getMessage();
+    }
+
+    // Render index view
+    $app->render(
+        'index.html',
+        array(
+            'info' => $info,
+            'form' => $form,
+            'sForm' => $sForm,
+            'brandcode' => $brandcode,
+            'userException' => $userException,
+            'users' => $users,
+            'settingException' => $settingException,
+            'settings' => $settings
+        )
+    );
+});
+
+// Run app
+$app->run();
+
+/**
+ * Create an API User
+ *
+ * @param string $key
+ * @param string $email
+ *
+ * @return void
+ */
+function createUser($key, $email, $info)
+{
+    $user = new \tabs\api\core\ApiUser();
+    $user->setKey($key);
+    $user->setEmail($email);
+    $user->create();
+        
+    mail(
+        'alex@carltonsoftware.co.uk', 
+        'New user created on the api',
+        "New user created with key {$user->getKey()} and email {$user->getEmail()} created for api {$info->getApiRoot()}."
+    );
+    
+    return $user;
+}
+
+/**
+ * Bootstrap templating function
+ * 
+ * @param \aw\formfields\forms\Form &$form Form object to template
+ * 
+ * @return void
+ */
+function templateForm(&$form)
+{
     // Set template to bootstrap
     $form->each('getType', 'label', function($ele) {
         $ele->setClass('control-label')
@@ -149,61 +333,4 @@ $app->get('/', function () use ($app, $info, $form, $brandcode) {
             </div>'
         );
     });
-
-    $userException = false;
-    $users = array();
-    try {
-        $users = \tabs\api\core\ApiUser::getUsers();
-    } catch (Exception $e) {
-        $userException = $e->getMessage();
-    }
-
-    $settingException = false;
-    $settings = array();
-    try {
-        $settings = \tabs\api\core\ApiSetting::getSettings();
-    } catch (Exception $e) {
-        $settingException = $e->getMessage();
-    }
-
-    // Render index view
-    $app->render(
-        'index.html',
-        array(
-            'info' => $info,
-            'form' => $form,
-            'brandcode' => $brandcode,
-            'userException' => $userException,
-            'users' => $users,
-            'settingException' => $settingException,
-            'settings' => $settings
-        )
-    );
-});
-
-// Run app
-$app->run();
-
-/**
- * Create an API User
- *
- * @param string $key
- * @param string $email
- *
- * @return void
- */
-function createUser($key, $email, $info)
-{
-    $user = new \tabs\api\core\ApiUser();
-    $user->setKey($key);
-    $user->setEmail($email);
-    $user->create();
-        
-    mail(
-        'alex@carltonsoftware.co.uk', 
-        'New user created on the api',
-        "New user created with key {$user->getKey()} and email {$user->getEmail()} created for api {$info->getApiRoot()}."
-    );
-    
-    return $user;
 }

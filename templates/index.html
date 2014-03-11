@@ -6,65 +6,71 @@
     </div>
     <div class="row">
         <div class="col-md-9">
-            <h3>Existing Users</h3>
-            <div>
-                <table class="table table-striped" id="usertable">
-                    <thead>
-                        <tr>
-                            <th>User Name</th>
-                            <th>Email</th>
-                            <th>Secret</th>
-                            <th>Roles</th>
-                            <th>Delete?</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if userException == false %}
-                            {% for user in users %}
-                                <tr>
-                                    <td>{{ user.getKey }}</td>
-                                    <td>{{ user.getEmail }}</td>
-                                    <td>{{ user.getSecret }}</td>
-                                    <td>
-                                        {% for role in user.getRoles %}
-                                            {{ role }}<br>
-                                        {% endfor %}
-                                    </td>
-                                    <td><a href="#" data-key="{{ user.getKey }}" data-action="delete" class="btn btn-danger btn-sm btn-delete">Delete</a></td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr><td colspan="5">{{ userException }}</td></tr>
-                        {% endif %}                    
-                    </tbody>
-                </table>
+            <div class="row">
+                <h3>Existing Users</h3>
+                <div>
+                    <table class="table table-striped" id="usertable">
+                        <thead>
+                            <tr>
+                                <th>User Name</th>
+                                <th>Email</th>
+                                <th>Secret</th>
+                                <th>Roles</th>
+                                <th>Delete?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if userException == false %}
+                                {% for user in users %}
+                                    <tr>
+                                        <td>{{ user.getKey }}</td>
+                                        <td>{{ user.getEmail }}</td>
+                                        <td>{{ user.getSecret }}</td>
+                                        <td>
+                                            {% for role in user.getRoles %}
+                                                {{ role }}<br>
+                                            {% endfor %}
+                                        </td>
+                                        <td><a href="#" data-url="index.php/deleteuser?brandcode={{ brandcode }}" data-key="{{ user.getKey }}" data-action="delete" class="btn btn-danger btn-sm btn-delete">Delete</a></td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr><td colspan="5">{{ userException }}</td></tr>
+                            {% endif %}                    
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <h3>API Settings</h3>
-            <div>
-                <table class="table table-striped" id="settingtable">
-                    <thead>
-                        <tr>
-                            <th>Setting</th>
-                            <th>Brand</th>
-                            <th>Value</th>
-                            <th>Delete?</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if settingException == false %}
-                            {% for setting in settings %}
-                                <tr>
-                                    <td>{{ setting.getName }}</td>
-                                    <td>{{ setting.getBrandcode }}</td>
-                                    <td>{{ setting.getValue }}</td>
-                                    <td><a href="#" data-key="{{ setting.getName }}" data-brandcode="{{ setting.getBrandcode }}" data-action="delete-setting" class="btn btn-danger btn-sm btn-delete">Delete</a></td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr><td colspan="4">{{ settingException }}</td></tr>
-                        {% endif %}                    
-                    </tbody>
-                </table>
+            <div class="row"><h3>API Settings</h3>
+                <div class="col-md-8">
+                    <table class="table table-striped" id="settingtable">
+                        <thead>
+                            <tr>
+                                <th>Setting</th>
+                                <th>Brand</th>
+                                <th>Value</th>
+                                <th>Delete?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if settingException == false %}
+                                {% for setting in settings %}
+                                    <tr>
+                                        <td>{{ setting.getName }}</td>
+                                        <td>{{ setting.getBrandcode }}</td>
+                                        <td>{{ setting.getValue }}</td>
+                                        <td><a href="#" data-url="index.php/deletesetting?brandcode={{ brandcode }}" data-key="{{ setting.getName }}" data-brandcode="{{ setting.getBrandcode }}" data-action="delete-setting" class="btn btn-danger btn-sm btn-delete">Delete</a></td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr><td colspan="4">{{ settingException }}</td></tr>
+                            {% endif %}                    
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-4">
+                    {{ sForm|raw }}
+                </div>
             </div>
         </div>
         <div class="col-md-3">
@@ -85,7 +91,7 @@
             $tr = $btn.parent().parent();
             bootbox.confirm("Are you sure?", function(result) {
                 if (result === true) {
-                    jQuery.postJSON('', $btn.data(), function(res) {
+                    jQuery.postJSON($btn.data('url'), $btn.data(), function(res) {
                         if (res.status === 'success') {
                             $tr.remove();
                         } else {
@@ -98,16 +104,18 @@
         
         // Submit handler
         jQuery('#formsubmit').click(function() {
-            $brands = jQuery('.additional-brands input:checked');
-            jQuery('.alert, .help-block').remove();
-            jQuery('.has-error').removeClass('has-error');
+            $form = jQuery(this).closest('form');
+            $brands = jQuery('.additional-brands input:checked', $form);
+            jQuery('.alert, .help-block', $form).remove();
+            jQuery('.has-error', $form).removeClass('has-error');
             if ($brands.size() > 0) {
                 jQuery.each($brands, function (index, cb) {
                     $cb = jQuery(cb);
-                    createUser(
+                    formPost(
+                        $form,
                         $cb.attr('name'),
                         function(json) {
-                            $ele = jQuery('input#' + json.brandcode);
+                            $ele = jQuery('input#' + json.brandcode, $form);
                             if (json.status === 'success') {
                                 $ele.parent().append(
                                     '<span class="label label-success">Created!</span>'
@@ -121,17 +129,18 @@
                     );
                 });
             } else {
-                createUser(
+                formPost(
+                    $form,
                     '{{ brandcode }}',
                     function(json) {
-                        jQuery('#apiuserform').prepend(
+                        $form.prepend(
                             '<div class="alert alert-' + json.status + '">' + json.message + '</div>'
                         );
                         if (json.status === 'success') {
                             refreshUsers()
                         } else {
                             jQuery.each(json.fields, function (key, value) {
-                                jQuery('#' + key).parent().append(
+                                jQuery('#' + key, $form).parent().append(
                                     '<span class="help-block">' + value + '</span>'
                                 ).parent().addClass('has-error');
                             });
@@ -141,17 +150,53 @@
             }
             return false;
         });
+        
+        // Submit handler
+        jQuery('#formsubmitsetting').click(function() {
+            $form = jQuery(this).closest('form');
+            $brands = jQuery('.additional-brands input:checked', $form);
+            jQuery('.alert, .help-block', $form).remove();
+            jQuery('.has-error', $form).removeClass('has-error');
+            
+            formPost(
+                $form,
+                '{{ brandcode }}',
+                function(json) {
+                    $form.prepend(
+                        '<div class="alert alert-' + json.status + '">' + json.message + '</div>'
+                    );
+                    if (json.status === 'success') {
+                        refreshSettings()
+                    } else {
+                        jQuery.each(json.fields, function (key, value) {
+                            jQuery('#' + key, $form).parent().append(
+                                '<span class="help-block">' + value + '</span>'
+                            ).parent().addClass('has-error');
+                        });
+                    }
+                }
+            );
+            return false;
+        });
     });
     
-    function createUser(brandcode, callback) {
+    function formPost(form, brandcode, callback) {
         jQuery.postJSON(
-            '?brandcode=' + brandcode, 
-            jQuery('#apiuserform').serialize(),
+            form.attr('action') + '?brandcode=' + brandcode, 
+            form.serialize(),
             callback
         );
     }
     
     function refreshUsers() {
+        refresh('#usertable');
+    }
+    
+    function refreshSettings() {
+        refresh('#settingtable');
+    }
+    
+    function refresh(id) {
         $.ajax('{{ baseUrl() }}?brandcode={{ brandcode }}',{
             dataFilter: function(data, type) {
                 type = type || 'text';
@@ -161,8 +206,8 @@
                 return data;
             }, 
             success: function(response) {
-                jQuery('#usertable').parent().html(
-                    jQuery('#usertable', $.parseHTML(response)).parent().html()
+                jQuery(id).parent().html(
+                    jQuery(id, $.parseHTML(response)).parent().html()
                 );
             }
         });
