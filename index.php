@@ -210,6 +210,41 @@ $app->post(
     );
 });
 
+
+// Adding a user
+$app->post(
+    '/checkhmac', 
+    function() use (
+        $app, 
+        $brandcode
+    ) {
+
+    $status = 'danger';
+    $message = 'Not Found';
+    
+    try {
+        $setting = \tabs\api\core\ApiSetting::getSetting(
+            'hmac',
+            strtoupper($brandcode)
+        );
+        
+        $status = 'success';
+        $message = 'OK';
+    } catch (Exception $ex) {
+        $message = 'FAIL';
+    }
+    
+    die(
+        json_encode(
+            array(
+                'status' => $status, 
+                'message' => $message, 
+                'brandcode' => $brandcode
+            )
+        )
+    );
+});
+
 // Define routes
 $app->get(
     '/', 

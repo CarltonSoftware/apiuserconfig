@@ -70,6 +70,8 @@
                 </div>
                 <div class="col-md-4">
                     {{ sForm|raw }}
+                    
+                    <button class="btn btn-success btn-lg" id="checkhmac" style="position: absolute; margin-top: -55px; margin-left: 135px;">Check HMAC</button>
                 </div>
             </div>
         </div>
@@ -149,6 +151,31 @@
                 );
             }
             return false;
+        });
+        
+        jQuery('#checkhmac').click(function() {
+            $brands = jQuery('.additional-brands input');
+            jQuery('.alert, .help-block, span.label').remove();
+            jQuery('.has-error').removeClass('has-error');
+            
+            if ($brands.size() > 0) {
+                jQuery.each($brands, function (index, cb) {
+                    $cb = jQuery(cb);
+                    jQuery.postJSON(
+                        'index.php/checkhmac?brandcode=' + $cb.attr('name'),
+                        {},
+                        function (json) {
+                            jQuery('input[name='+json.brandcode+']').parent().append(
+                                '<span class="label label-' + json.status + '">' + json.message + '</span>'
+                            );
+                        }
+                    );
+                });
+            } else {
+                jQuery('#settingsform').prepend(
+                    '<div class="alert alert-info">No brands to check</div>'
+                );
+            }
         });
         
         // Submit handler
