@@ -228,6 +228,10 @@ $app->post(
             strtoupper($brandcode)
         );
         
+        if ($setting->getValue() != 'true') {
+            throw new Exception('Hmac is false');
+        }
+        
         $status = 'success';
         $message = 'OK';
     } catch (Exception $ex) {
