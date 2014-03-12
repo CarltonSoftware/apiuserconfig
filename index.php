@@ -183,7 +183,7 @@ $app->post(
     if ($sForm->isValid()) {
         try {
             $setting = new \tabs\api\core\ApiSetting();
-            $setting->setBrandcode($brandcode);
+            $setting->setBrandcode(strtoupper($brandcode));
             $setting->setName($app->request->post('key'));
             $setting->setValue($app->request->post('value'));
             $setting->create();
