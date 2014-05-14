@@ -213,7 +213,7 @@ $app->post(
 
 // Adding a user
 $app->post(
-    '/checkhmac', 
+    '/checksetting', 
     function() use (
         $app, 
         $brandcode
@@ -224,16 +224,19 @@ $app->post(
     
     try {
         $setting = \tabs\api\core\ApiSetting::getSetting(
-            'hmac',
+            $app->request->post('key'),
             strtoupper($brandcode)
         );
         
-        if ($setting->getValue() != 'true') {
-            throw new Exception('Hmac is false');
-        }
-        
         $status = 'success';
-        $message = 'OK';
+        if (strtolower($app->request->post('key')) == 'hmac') {
+            if ($setting->getValue() != 'true') {
+                throw new Exception('Hmac is false');
+            }
+            $message = 'OK';
+        } else {
+            $message = $setting->getValue();
+        }
     } catch (Exception $ex) {
         $message = 'FAIL';
     }

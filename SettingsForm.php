@@ -56,13 +56,14 @@ class SettingsForm extends \aw\formfields\forms\StaticForm
         // Add key field
         $fs->addChild(
             self::getNewLabelAndTextField(
-                'Setting Name'
+                'Key'
             )->getElementBy('getType', 'text')
                 ->setName('key')
                 ->setId('key')
                 ->setAttribute('placeholder', 'Alpha/Numeric characters only')
                 ->setRule('ValidSlug', true)
                 ->getParent()
+                ->setLabel('Setting Name')
         );
 
         // Add value field

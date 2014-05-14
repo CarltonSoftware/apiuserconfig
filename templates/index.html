@@ -71,7 +71,7 @@
                 <div class="col-md-4">
                     {{ sForm|raw }}
                     
-                    <button class="btn btn-success btn-lg" id="checkhmac" style="position: absolute; margin-top: -55px; margin-left: 135px;">Check HMAC</button>
+                    <button class="btn btn-success btn-lg" id="checkhmac" style="position: absolute; margin-top: -55px; margin-left: 135px;">Check Setting</button>
                 </div>
             </div>
         </div>
@@ -157,13 +157,14 @@
             $brands = jQuery('.additional-brands input');
             jQuery('.alert, .help-block, span.label').remove();
             jQuery('.has-error').removeClass('has-error');
+            $form = jQuery('#settingsform');
             
             if ($brands.size() > 0) {
                 jQuery.each($brands, function (index, cb) {
                     $cb = jQuery(cb);
                     jQuery.postJSON(
-                        'index.php/checkhmac?brandcode=' + $cb.attr('name'),
-                        {},
+                        'index.php/checksetting?brandcode=' + $cb.attr('name'),
+                        $form.serialize(),
                         function (json) {
                             jQuery('input[name='+json.brandcode+']').parent().append(
                                 '<span class="label label-' + json.status + '">' + json.message + '</span>'
