@@ -6,9 +6,13 @@
     'apikey',
     'secret'
 );
-   
-$apicompanies = \tabs\api\utility\Utility::getAllBrands();
-$brands = array();
-foreach ($apicompanies as $company) {
-    $brands[$company['brandcode']] = $company['name'];
+
+try {
+    $apicompanies = \tabs\api\utility\Utility::getAllBrands();
+    $brands = array();
+    foreach ($apicompanies as $company) {
+        $brands[$company['brandcode']] = $company['name'];
+    }
+} catch (Exception $ex) {
+    die($ex->getMessage());
 }
