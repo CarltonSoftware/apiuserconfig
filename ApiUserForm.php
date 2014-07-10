@@ -75,6 +75,16 @@ class ApiUserForm extends \aw\formfields\forms\StaticForm
                 ->setRule('ValidEmail', true)
                 ->getParent()
         );
+
+        // Add secret field
+        $fs->addChild(
+            self::getNewLabelAndTextField(
+                'Secret (optional)'
+            )->getElementBy('getType', 'text')
+                ->setName('secret')
+                ->setId('secret')
+                ->getParent()
+        );
         
         // Add fieldset to form
         $form->addChild($fs);

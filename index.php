@@ -53,7 +53,12 @@ $app->post('/adduser', function() use ($app, $form, $brandcode, $info) {
     
     if ($form->isValid()) {
         try {
-            createUser($app->request->post('key'), $app->request->post('email'), $info);
+            createUser(
+                $app->request->post('key'),
+                $app->request->post('email'),
+                $info,
+                $app->request->post('secret')
+            );
             $status = 'success';
             $message = 'User Created!';
         } catch (Exception $ex) {
@@ -306,14 +311,20 @@ $app->run();
  *
  * @param string $key
  * @param string $email
+ * @param string $secret
  *
  * @return void
  */
-function createUser($key, $email, $info)
+function createUser($key, $email, $info, $secret = '')
 {
     $user = new \tabs\api\core\ApiUser();
     $user->setKey($key);
     $user->setEmail($email);
+    
+    if (strlen($secret) > 0) {
+        $user->setSecret($secret);
+    }
+    
     $user->create();
         
     mail(
