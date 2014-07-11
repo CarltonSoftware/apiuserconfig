@@ -58,7 +58,7 @@
                                         <td>{{ booking.getCreated()|date('d M Y H:i:s') }}</td>
                                         <td>{{ booking.getCustomer.getFullname }}</td>
                                         <td>{{ amountPaid }}</td>
-                                        <td><a href="booking/{{ booking.getBookingId }}" class="btn btn-primary">Detail</a></td>
+                                        <td><a href="booking/{{ booking.getBookingId }}?brandcode={{ brandcode }}" class="btn btn-primary">Detail</a></td>
                                     </tr>
                                 {% endfor %}
                             {% else %}
