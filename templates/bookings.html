@@ -40,6 +40,7 @@
                                 <th>BookingId</th>
                                 <th>Booked Date</th>
                                 <th>Customer</th>
+                                <th>Property Ref</th>
                                 <th>Amount Paid?</th>
                                 <th></th>
                             </tr>
@@ -57,6 +58,7 @@
                                         <td>{{ booking.getBookingId() }}</td>
                                         <td>{{ booking.getCreated()|date('d M Y H:i:s') }}</td>
                                         <td>{{ booking.getCustomer.getFullname }}</td>
+                                        <td>{{ booking.getPropertyRef }}</td>
                                         <td>{{ amountPaid }}</td>
                                         <td><a href="booking/{{ booking.getBookingId }}?brandcode={{ brandcode }}" class="btn btn-primary">Detail</a></td>
                                     </tr>
