@@ -77,6 +77,16 @@ class BookingsFilter extends \aw\formfields\forms\StaticForm
                 ->getParent()
         );
 
+        // Add fromdate field
+        $fs->addChild(
+            self::getNewLabelAndTextField(
+                'Property Ref'
+            )->getElementBy('getType', 'text')
+                ->setName('filter-propref')
+                ->setId('filter-propref')
+                ->getParent()
+        );
+
         // Add pageSize field
         $fs->addChild(
             self::getNewLabelAndSelect(
