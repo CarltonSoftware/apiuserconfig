@@ -3,7 +3,7 @@
 {% block content %}
     <div class="page-header">
         <h1>Api Config Form <small>for {{ info.getApiRoot() }}</small></h1>
-        <p><a href="/apiuserconfig/bookings?brandcode={{ brandcode }}">View bookings</a></p>
+        <p><a href="{{ baseUrl }}/bookings?brandcode={{ brandcode }}">View bookings</a></p>
     </div>
     <div class="row">
         <div class="col-md-9">
@@ -32,7 +32,7 @@
                                                 {{ role }}<br>
                                             {% endfor %}
                                         </td>
-                                        <td><a href="#" data-url="index.php/deleteuser?brandcode={{ brandcode }}" data-key="{{ user.getKey }}" data-action="delete" class="btn btn-danger btn-sm btn-delete">Delete</a></td>
+                                        <td><a href="#" data-url="{{ baseUrl }}/deleteuser?brandcode={{ brandcode }}" data-key="{{ user.getKey }}" data-action="delete" class="btn btn-danger btn-sm btn-delete">Delete</a></td>
                                     </tr>
                                 {% endfor %}
                             {% else %}
@@ -61,7 +61,7 @@
                                         <td>{{ setting.getName }}</td>
                                         <td>{{ setting.getBrandcode }}</td>
                                         <td>{{ setting.getValue }}</td>
-                                        <td><a href="#" data-url="index.php/deletesetting?brandcode={{ brandcode }}" data-key="{{ setting.getName }}" data-brandcode="{{ setting.getBrandcode }}" data-action="delete-setting" class="btn btn-danger btn-sm btn-delete">Delete</a></td>
+                                        <td><a href="#" data-url="{{ baseUrl }}/deletesetting?brandcode={{ brandcode }}" data-key="{{ setting.getName }}" data-brandcode="{{ setting.getBrandcode }}" data-action="delete-setting" class="btn btn-danger btn-sm btn-delete">Delete</a></td>
                                     </tr>
                                 {% endfor %}
                             {% else %}
@@ -227,7 +227,7 @@
     }
     
     function refresh(id) {
-        $.ajax('{{ baseUrl() }}?brandcode={{ brandcode }}',{
+        $.ajax('{{ baseUrl }}?brandcode={{ brandcode }}',{
             dataFilter: function(data, type) {
                 type = type || 'text';
                 if(type == 'html' || type == 'text') {

@@ -16,6 +16,12 @@ $app = new \Slim\Slim(
     )
 );
 
+$posIndex = strpos($_SERVER['PHP_SELF'], '/index.php');
+$baseUrl = substr($_SERVER['PHP_SELF'], 0, $posIndex);
+$app->hook('slim.before', function() use ($app, $baseUrl) {
+    $app->view->appendData(array('baseUrl' => $baseUrl));
+});
+
 $app->view->parserExtensions = array(
     new \Slim\Views\TwigExtension(),
 );
