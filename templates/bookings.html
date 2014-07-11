@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+    #apiuserform .user-details,
+    #apiuserform .form-actions,
+    #apiuserform .additional-brands legend,
+    #apiuserform .additional-brands input {
+        display: none;
+    }
+    #apiuserform .additional-brands .checkbox {
+        padding-left: 0;
+    }
+    
+    #bookingsfilterform .form-actions {
+        margin-top: 10px;
+    }
+    #bookingsfilterform label {
+        margin-bottom: 5px;
+    }
+    #bookingsfilterform .form-group {
+        margin-right: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Api Config Form <small>for {{ info.getApiRoot() }}</small></h1>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="row">
+                {{ bookingsFilter|raw }}
+                <div>
+                    <table class="table table-striped table-bordered table-condensed table-hover" id="bookingstable">
+                        <thead>
+                            <tr>
+                                <th>BookingId</th>
+                                <th>Booked Date</th>
+                                <th>Customer</th>
+                                <th>Amount Paid?</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if bookingException == false %}
+                                {% for booking in bookings.getBookings() %}
+                                
+                                    {% set amountPaid = 0 %}
+                                    {% for payment in booking.getPayments() %}
+                                        {% set amountPaid = amountPaid + payment.getAmount() %}
+                                    {% endfor %}
+                                
+                                    <tr>
+                                        <td>{{ booking.getBookingId() }}</td>
+                                        <td>{{ booking.getCreated()|date('d M Y H:i:s') }}</td>
+                                        <td>{{ booking.getCustomer.getFullname }}</td>
+                                        <td>{{ amountPaid }}</td>
+                                        <td><a href="booking/{{ booking.getBookingId }}" class="btn btn-primary">Detail</a></td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr><td colspan="4">{{ bookingException }}</td></tr>
+                            {% endif %}                    
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <h3>Brands</h3>
+            {{ form|raw }}
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript %}
+    
+    
+
+{% endblock %}

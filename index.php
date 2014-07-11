@@ -3,6 +3,7 @@
 require 'vendor/autoload.php';
 require_once 'ApiUserForm.php';
 require_once 'SettingsForm.php';
+require_once 'BookingsFilter.php';
 require_once 'config.php';
 
 // Get api info
@@ -303,6 +304,94 @@ $app->get(
     );
 });
 
+// Define routes
+$app->get(
+    '/bookings', 
+    function () use (
+        $app, 
+        $info, 
+        $form, 
+        $brandcode,
+        $sForm
+    ) {
+    
+    templateForm($form);
+    templateForm($sForm);
+    $filterForm = BookingsFilter::factory(
+        array(
+            'class' => 'form-inline',
+            'id' => 'bookingsfilterform',
+        ),
+        filter_input_array(INPUT_GET),
+        $brandcode
+    );
+    templateForm($filterForm);
+    
+    $filters = array();
+    foreach (\tabs\api\booking\BookingAdmin::getBookingFilters() as $filter) {
+        $filters[$filter] = $app->request->get('filter-' . $filter, '');
+    }
+    
+    $bookingException = false;
+    $bookings = null;
+    try {
+        $bookings = \tabs\api\booking\BookingAdmin::factory(
+            array_filter($filters),
+            $app->request->get('page', 1),
+            $app->request->get('pageSize', 20)
+        );
+    } catch (Exception $ex) {
+        $bookingException = $ex->getMessage();
+    }
+    
+    // Render index view
+    $app->render(
+        'bookings.html',
+        array(
+            'info' => $info,
+            'form' => $form,
+            'sForm' => $sForm,
+            'brandcode' => $brandcode,
+            'bookingsFilter' => $filterForm,
+            'bookings' => $bookings,
+            'bookingException' => $bookingException
+        )
+    );
+});
+
+// Define routes
+$app->get(
+    '/booking/:id', 
+    function ($id) use (
+        $app, 
+        $info, 
+        $form, 
+        $brandcode,
+        $sForm
+    ) {
+    
+    $bookingException = false;
+    $booking = null;
+    try {
+        $booking = \tabs\api\booking\Booking::createBookingFromId($id);
+    } catch (Exception $ex) {
+        $bookingException = $ex->getMessage();
+    }
+    
+    // Render index view
+    $app->render(
+        'booking.html',
+        array(
+            'info' => $info,
+            'form' => $form,
+            'sForm' => $sForm,
+            'brandcode' => $brandcode,
+            'booking' => $booking,
+            'bookingException' => $bookingException
+        )
+    );
+});
+
 // Run app
 $app->run();
 
@@ -360,6 +449,11 @@ function templateForm(&$form)
 
     // Set template to bootstrap
     $form->each('getType', 'text', function($ele) {
+        $ele->setClass('form-control');
+    });
+
+    // Set template to bootstrap
+    $form->each('getType', 'select', function($ele) {
         $ele->setClass('form-control');
     });
 
