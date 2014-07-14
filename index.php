@@ -32,7 +32,7 @@ $form = ApiUserForm::factory(
         'class' => 'form',
         'method' => 'post',
         'id' => 'apiuserform',
-        'action' => 'index.php/adduser'
+        'action' => $baseUrl . '/adduser'
     ),
     $app->request->post(),
     (empty($brands) ? array() : $brands)
@@ -44,7 +44,7 @@ $sForm = SettingsForm::factory(
         'class' => 'form',
         'method' => 'post',
         'id' => 'settingsform',
-        'action' => 'index.php/addsetting'
+        'action' => $baseUrl . '/addsetting'
     ),
     $app->request->post(),
     $brandcode

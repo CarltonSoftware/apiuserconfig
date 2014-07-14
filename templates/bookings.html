@@ -38,6 +38,7 @@
                         <thead>
                             <tr>
                                 <th>BookingId</th>
+                                <th>Tabs Booking Number</th>
                                 <th>Booked Date</th>
                                 <th>Customer</th>
                                 <th>Property Ref</th>
@@ -56,6 +57,7 @@
                                 
                                     <tr>
                                         <td>{{ booking.getBookingId() }}</td>
+                                        <td>{{ booking.getWNumber() }}</td>
                                         <td>{{ booking.getCreated()|date('d M Y H:i:s') }}</td>
                                         <td>{{ booking.getCustomer.getFullname }}</td>
                                         <td>{{ booking.getPropertyRef }}</td>
