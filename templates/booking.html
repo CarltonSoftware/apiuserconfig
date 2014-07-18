@@ -89,6 +89,26 @@
                         </tr>
                     </tbody>
                 </table>
+                
+                <h3>Available Extras</h3>
+                <table class="table table-striped table-bordered table-condensed">
+                    <thead>
+                        <th>Code</th>
+                        <th>Extra</th>
+                        <th>Type</th>
+                        <th>Price</th>
+                    </thead>
+                    <tbody>
+                        {% for extra in booking.getAvailableExtras %}
+                        <tr>
+                            <td>{{ extra.getCode }}</td>
+                            <td>{{ extra.getDescription }}</td>
+                            <td>{{ extra.getType }}</td>
+                            <td>£{{ extra.getPrice }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
 
                 {% if booking.getPayments|length > 0 %}
                     <h3>Payments</h3>
