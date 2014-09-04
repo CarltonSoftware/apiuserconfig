@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+    .price-check label {
+        display: block;
+    }
+    .price-check .party-size input {
+        width: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<h3>Price Checker</h3>
+<p>Enter the form below to request a price from the api.</p>
+
+{% if exception is not null %}
+    <p class="alert alert-danger">{{ exception }}</p>
+{% endif %}
+
+{% if enquiry is not null %}
+<div class="well">
+    <h4>Enquiry</h4>
+    <ul>
+        <li>From: {{ enquiry.getFromDateString() }}</li>
+        <li>Till: {{ enquiry.getToDateString() }}</li>
+        <li>Basic Price: &pound;{{ enquiry.getBasicPrice() }}</li>
+        <li>Extras: &pound;{{ enquiry.getExtrasTotal() }}</li>
+        <li>Total Price: &pound;{{ enquiry.getTotalPrice() }}</li>
+    </ul>
+</div>
+{% endif %}
+
+{{ enquiryForm|raw }}
+
+{% endblock %}

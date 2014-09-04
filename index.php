@@ -3,6 +3,7 @@
 require 'vendor/autoload.php';
 require_once 'ApiUserForm.php';
 require_once 'SettingsForm.php';
+require_once 'EnquiryForm.php';
 require_once 'BookingsFilter.php';
 require_once 'config.php';
 
@@ -394,6 +395,94 @@ $app->get(
             'brandcode' => $brandcode,
             'booking' => $booking,
             'bookingException' => $bookingException
+        )
+    );
+});
+
+// Define routes
+$app->get(
+    '/attributes', 
+    function () use (
+        $app, 
+        $info,
+        $brandcode
+    ) {
+    
+    // Sort the attributes so that they are in alphabetical order
+    $attributes = $info->getAttributes();
+    natsort($attributes);
+    
+    // Render index view
+    $app->render(
+        'attributes.html',
+        array(
+            'info' => $info,
+            'brandcode' => $brandcode,
+            'attributes' => $attributes
+        )
+    );
+});
+
+// Define routes
+$app->get(
+    '/pricecheck', 
+    function () use (
+        $app, 
+        $info,
+        $brandcode
+    ) {
+    
+    // Get all property references
+    $searchHelper = new tabs\api\property\SearchHelper();
+    $searchHelper->setFields(array('id', 'propertyRef', 'name'));
+    $searchHelper->setInitialParams(array('pageSize' => 9999, 'orderBy' => 'propname'));
+    $searchHelper->search(1);
+    $properties = $searchHelper->getProperties();
+    $exception = null;
+    $enquiry = null;
+    
+    $enquiryForm = new EnquiryForm(
+        array(
+            'id' => 'enquiryform',
+            'class' => 'price-check'
+        ),
+        filter_input_array(INPUT_GET)
+    );
+    $enquiryForm->setProperties($properties)->setBrandcode($brandcode);
+    
+    $enquiryForm->build()->mapValues();
+    
+    if (filter_input(INPUT_GET, 'property')) {
+        $enquiryForm->validate();
+        if ($enquiryForm->isValid()) {
+            try {
+                $enquiry = \tabs\api\booking\Enquiry::create(
+                    filter_input(INPUT_GET, 'property'),
+                    filter_input(INPUT_GET, 'brandcode'),
+                    strtotime(filter_input(INPUT_GET, 'from')),
+                    strtotime(filter_input(INPUT_GET, 'to')),
+                    (integer) filter_input(INPUT_GET, 'adults'),
+                    (integer) filter_input(INPUT_GET, 'children'),
+                    (integer) filter_input(INPUT_GET, 'infants'),
+                    (integer) filter_input(INPUT_GET, 'pets')
+                );
+            } catch (Exception $ex) {
+                $exception = $ex->getMessage();
+            }
+        } else {
+            $exception = 'There were some errors with the data you\'ve added.';
+        }
+    }
+    
+    // Render index view
+    $app->render(
+        'pricecheck.html',
+        array(
+            'info' => $info,
+            'brandcode' => $brandcode,
+            'enquiryForm' => $enquiryForm->render(),
+            'exception' => $exception,
+            'enquiry' => $enquiry
         )
     );
 });

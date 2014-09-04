@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-condensed table-hover table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Group</th>
+                        <th>Brand</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attr in attributes %}
+                        <tr>
+                            <td>{{ attr.getCode }}</td>
+                            <td>{{ attr.getLabel }}</td>
+                            <td>{{ attr.getType }}</td>
+                            <td>{{ attr.getGroup }}</td>
+                            <td>{{ attr.getBrand }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
