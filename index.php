@@ -410,7 +410,7 @@ $app->get(
     
     // Sort the attributes so that they are in alphabetical order
     $attributes = $info->getAttributes();
-    natsort($attributes);
+    sort($attributes);
     
     // Render index view
     $app->render(
