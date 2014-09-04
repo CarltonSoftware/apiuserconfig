@@ -20,15 +20,16 @@
     <p class="alert alert-danger">{{ exception }}</p>
 {% endif %}
 
-{% if enquiry is not null %}
+{% if booking is not null %}
 <div class="well">
-    <h4>Enquiry</h4>
+    <h4>Booking<small> [<a href="{{ baseUrl }}/booking/{{ booking.getBookingId }}?brandcode={{ brandcode }}">view request</a>]</small></h4>
     <ul>
-        <li>From: {{ enquiry.getFromDateString() }}</li>
-        <li>Till: {{ enquiry.getToDateString() }}</li>
-        <li>Basic Price: &pound;{{ enquiry.getBasicPrice() }}</li>
-        <li>Extras: &pound;{{ enquiry.getExtrasTotal() }}</li>
-        <li>Total Price: &pound;{{ enquiry.getTotalPrice() }}</li>
+        <li>From: {{ booking.getFromDateString() }}</li>
+        <li>Till: {{ booking.getToDateString() }}</li>
+        <li>Basic Price: &pound;{{ booking.getBasicPrice() }}</li>
+        <li>Extras: &pound;{{ booking.getExtrasTotal() }}</li>
+        <li>Total Price: &pound;{{ booking.getTotalPrice() }}</li>
+        <li>Deposit Price: &pound;{{ booking.getDepositAmount() }}</li>
     </ul>
 </div>
 {% endif %}

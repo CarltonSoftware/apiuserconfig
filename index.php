@@ -439,7 +439,7 @@ $app->get(
     $searchHelper->search(1);
     $properties = $searchHelper->getProperties();
     $exception = null;
-    $enquiry = null;
+    $booking = null;
     
     $enquiryForm = new EnquiryForm(
         array(
@@ -456,7 +456,7 @@ $app->get(
         $enquiryForm->validate();
         if ($enquiryForm->isValid()) {
             try {
-                $enquiry = \tabs\api\booking\Enquiry::create(
+                $booking = \tabs\api\booking\Booking::create(
                     filter_input(INPUT_GET, 'property'),
                     filter_input(INPUT_GET, 'brandcode'),
                     strtotime(filter_input(INPUT_GET, 'from')),
@@ -482,7 +482,7 @@ $app->get(
             'brandcode' => $brandcode,
             'enquiryForm' => $enquiryForm->render(),
             'exception' => $exception,
-            'enquiry' => $enquiry
+            'booking' => $booking
         )
     );
 });
