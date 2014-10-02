@@ -30,10 +30,21 @@
                             <td>Property:</td>
                             <td>{{ booking.getProperty.getName }} ({{ booking.getProperty.getPropref }})</td>
                         </tr>
+                        <tr>
+                            <td>Dates:</td>
+                            <td>{{ booking.getFromDateString }} to {{ booking.getToDateString }}</td>
+                        </tr>
+
+                        {% if booking.getPets > 0 %}
+                        <tr>
+                            <td>Pets:</td>
+                            <td>{{ booking.getPets }}</td>
+                        </tr>
+                        {% endif %}
                 
                         {% if booking.isConfirmed %}
                         <tr>
-                            <td>Tabs web booking number</td>
+                            <td>Tabs web booking number:</td>
                             <td>W{{ booking.getWNumber }}</td>
                         </tr>
                         {% endif %}
