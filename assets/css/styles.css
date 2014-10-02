@@ -1,0 +1,49 @@
+#enquiryform fieldset {
+    *zoom: 1;
+}
+#enquiryform fieldset:before,
+#enquiryform fieldset:after {
+    content:"";
+    display:table;
+}
+#enquiryform fieldset:after {
+    clear:both;
+}
+
+#enquiryform {
+    width: 400px;
+}
+
+#enquiryform label {
+    width: 100%;
+    font-weight: normal;
+    font-size: 16px;
+}
+
+#enquiryform legend {
+    padding: 10px 0;
+}
+
+#enquiryform input,
+#enquiryform select {
+    width: 100%;
+    display: block;
+    font-size: 20px;
+    margin-top: 5px;
+}
+
+#enquiryform input,
+#enquiryform select {
+    padding: 3px;
+}
+
+#enquiryform .party-size label,
+#enquiryform .date-and-duration label {
+    width: 49%;
+    float: left;
+}
+
+#enquiryform .party-size label:nth-child(odd),
+#enquiryform .date-and-duration label:nth-child(odd) {
+    float: right;
+}
