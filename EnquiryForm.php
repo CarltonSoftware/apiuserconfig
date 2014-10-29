@@ -136,7 +136,9 @@ class EnquiryForm extends \aw\formfields\forms\StaticForm
                 ->setId('from')
                 ->setAttribute('placeholder', 'yyyy-mm-dd')
                 ->setRule('ValidDate', true)
-                ->getParent()
+                ->setTemplate(
+                    '<input type="date"{implodeAttributes}>'
+                )->getParent()
         );
         
         // Add date
@@ -148,7 +150,9 @@ class EnquiryForm extends \aw\formfields\forms\StaticForm
                 ->setId('to')
                 ->setAttribute('placeholder', 'yyyy-mm-dd')
                 ->setRule('ValidDate', true)
-                ->getParent()
+                ->setTemplate(
+                    '<input type="date"{implodeAttributes}>'
+                )->getParent()
         );
         
         $this->addChild($fs);
