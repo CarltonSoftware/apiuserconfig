@@ -51,23 +51,30 @@
                     </tbody>
                 </table>
                 
-                <h3>Customer</h3>
-                <table class="table table-striped table-bordered table-condensed">
-                    <tbody>
-                        <tr>
-                            <td>Name</td>
-                            <td>{{ booking.getCustomer.getFullName }}</td>
-                        </tr>
-                        <tr>
-                            <td>Address</td>
-                            <td>{{ booking.getCustomer.getAddress.getFullAddress }}</td>
-                        </tr>
-                        <tr>
-                            <td>Source</td>
-                            <td>{{ booking.getCustomer.getSource.getCode }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                {% if booking.getCustomer %}
+                    <h3>Customer</h3>
+                    <table class="table table-striped table-bordered table-condensed">
+                        <tbody>
+                            <tr>
+                                <td>Name</td>
+                                <td>{{ booking.getCustomer.getFullName }}</td>
+                            </tr>
+                            <tr>
+                                <td>Email</td>
+                                <td>{{ booking.getCustomer.getEmail }}</td>
+                            </tr>
+                            <tr>
+                                <td>Address</td>
+                                <td>{{ booking.getCustomer.getAddress.getFullAddress }}</td>
+                            </tr>
+                            <tr>
+                                <td>Source</td>
+                                <td>{{ booking.getCustomer.getSource.getCode }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                {% endif %}
+
 
                 <h3>Price</h3>
                 <table class="table table-striped table-bordered table-condensed">
