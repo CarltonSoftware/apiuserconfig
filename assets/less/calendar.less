@@ -1,0 +1,251 @@
+/**
+ * The Original Cottage Company (TOCC)
+ *  
+ * @title       Web style guide 
+ * @author      Alex Wyett (alex@carltonsoftware.co.uk)
+ * @document    Calendar css
+ * @description This file contains all of the structural and colour components 
+ *              of the calendar component for the TOCC template.
+ */
+
+
+/* ==========================================================================
+   Calendar mixins
+============================================================================ */
+
+@calBgColour: #666;
+@emptyTdColour: #DDD;
+@emptyTdFontColour: #333;
+@availableTdColour: #939393;
+@availableTdFontColor: #FFF;
+@unavailableTdColour: #f9f9f9;
+@unavailableTdFontColor: #d7d7d7;
+@changedayTdColour: #444;
+@changedayTdFontColor: #FFF;
+@selectedTdColour: #6865A1;
+@calGridColour: #bababa;
+@calTdThPadding: 8px;
+
+.emptyMixin() {
+    background: @emptyTdColour;
+    color: @emptyTdFontColour;
+}
+
+.unavailableMixin() {
+    background: @unavailableTdColour;
+    color: @unavailableTdFontColor;
+}
+
+.availableMixin() {
+    background: @availableTdColour;
+    color: @availableTdFontColor;
+    cursor: pointer;
+}
+
+.changedayMixin() {
+    background: @changedayTdColour;
+    color: @changedayTdFontColor;
+    cursor: pointer;
+}
+
+.selectedMixin() {
+    background: @selectedTdColour;
+}
+
+.changedaySelectedStartMixin() {
+    background: linear-gradient(135deg, @changedayTdColour, @changedayTdColour 49%, @changedayTdColour 49%, @selectedTdColour 51%, @selectedTdColour 51%, @selectedTdColour 100%);
+    color: @changedayTdFontColor;
+    cursor: pointer;
+}
+
+.availableSelectedStartMixin() {
+    background: linear-gradient(135deg, @availableTdColour, @availableTdColour 49%, @availableTdColour 49%, @selectedTdColour 51%, @selectedTdColour 51%, @selectedTdColour 100%);
+    color: @availableTdFontColor;
+    cursor: pointer;
+}
+
+.availableSelectedFinishMixin() {
+    background: linear-gradient(135deg, @selectedTdColour, @selectedTdColour 49%, @selectedTdColour 49%, @availableTdColour 51%, @availableTdColour 51%, @availableTdColour 100%);
+    color: @availableTdFontColor;
+    cursor: pointer;
+}
+
+.changedaySelectedFinishMixin() {
+    background: linear-gradient(135deg, @selectedTdColour, @selectedTdColour 49%, @selectedTdColour 49%, @changedayTdColour 51%, @changedayTdColour 51%, @changedayTdColour 100%);
+    color: @changedayTdFontColor;
+    cursor: pointer;
+}
+
+.unavailableSelectedFinishMixin() {
+    background: linear-gradient(135deg, @selectedTdColour, @selectedTdColour 49%, @selectedTdColour 49%, @unavailableTdColour 51%, @unavailableTdColour 51%, @unavailableTdColour 100%);
+    color: @unavailableTdFontColor;
+}
+
+.toccCalendar() {
+    .border-radius(6px, 3px, 3px, 6px);
+    background: @calBgColour;
+    padding: 3px;
+    float: left;
+    margin-right: @calTdThPadding;
+    
+    &:last-child {
+        margin-right: 0;
+    }
+
+    table {
+        font-weight: normal;
+        border-collapse: collapse;
+        width: 100%;
+        
+        th {
+            border: none;
+            text-align: center;
+            padding: @calTdThPadding;
+        }
+        
+        th,
+        thead td {
+            font-weight: normal;
+            font-size: 11px;
+            color: #FFF;
+            height: auto !important;
+            background: none;
+            border: none;
+            text-align: center;
+        }
+        
+        tbody {
+            border-top: none;
+        }
+        
+        tr.days,
+        tr.cal-sub-title {
+            th,
+            td {
+                .emptyMixin();
+                font-size: 9px;
+                border: none;
+                text-align: center;
+                padding: @calTdThPadding;
+                
+                &:first-child {
+                    border-left: 1px solid @calGridColour;
+                }
+                
+                &:last-child {
+                    border-right: 1px solid @calGridColour;
+                }
+            }
+        }
+        
+        td {            
+            .emptyMixin();
+            vertical-align: middle;
+            text-align: center;
+            border: 1px solid @calGridColour;
+            font-size: 11px;
+            padding: @calTdThPadding;
+                
+            a {
+                .box(100%, 100%);
+                text-decoration: none;
+                color: @availableTdFontColor;
+            }
+    
+            &.available, 
+            &.avaTd {
+                .availableMixin();
+            }
+            
+            &.changeover, 
+            &.cdAvaTd {
+                .changedayMixin();
+            }
+            
+            &.selected, 
+            &.highlight {
+                .selectedMixin();
+            }
+            
+            &.unavailable, 
+            &.notAvaTd, 
+            &.past {
+                .unavailableMixin();
+                a {
+                    text-decoration: none;
+                    color: @emptyTdFontColour;
+                }
+            }
+            
+            &.highlightstart.available, 
+            &.selecteddatestart.available, 
+            &.selecteddatestart.avaTd {
+                .availableSelectedStartMixin();
+            }
+            
+            &.highlightstart.changeover, 
+            &.selecteddatestart.changeover, 
+            &.selecteddatestart.cdAvaTd {
+                .changedaySelectedStartMixin();
+            }
+            
+            &.highlightend.available, 
+            &.highlightfinish.available, 
+            &.selecteddatefinish.available, 
+            &.selecteddatefinish.avaTd {
+                .availableSelectedFinishMixin();
+            }
+            
+            &.highlightend.changeover, 
+            &.highlightfinish.changeover, 
+            &.selecteddatefinish.changeover, 
+            &.selecteddatefinish.cdAvaTd {
+                .changedaySelectedFinishMixin();
+            }
+            
+            &.highlightend.unavailable, 
+            &.highlightfinish.unavailable, 
+            &.selecteddatefinish.unavailable, 
+            &.selecteddatefinish.notAvaTd {
+                .unavailableSelectedFinishMixin();
+            }
+        }
+    }
+}
+
+.toccCalendarKey() {
+    .clearfix();
+    .key-item {
+        .lineHeight(20px);
+        float: left;
+        font-size: 11px;
+        
+        .label,
+        .key {
+            float: left;
+            margin-right: 10px;
+        }
+        
+        .key {
+            .box(20px, 20px);
+            border: 1px solid #CCC;
+            cursor: default;
+
+            &.available {
+                .availableMixin();
+            }
+
+            &.changeover {
+                .changedayMixin();
+            }
+
+            &.unavailable {
+                .unavailableMixin();
+            }
+
+            &.selected {
+                .selectedMixin();
+            }
+        }
+    }
+}

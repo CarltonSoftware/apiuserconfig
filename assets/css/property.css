@@ -1,0 +1,212 @@
+/**
+ * Variables
+ */
+/**
+ * The Original Cottage Company (TOCC)
+ *  
+ * @title       Web style guide 
+ * @author      Alex Wyett (alex@carltonsoftware.co.uk)
+ * @document    Mixin Collection
+ * @description This file contains all of the mixins required for the TOCC
+ *              template.
+ */
+/* ==========================================================================
+   TOCC Specific
+============================================================================ */
+/* ==========================================================================
+   Font Size http://css-tricks.com/snippets/css/less-mixin-for-rem-font-sizing/
+============================================================================ */
+/* ==========================================================================
+   The micro clearfix http://nicolasgallagher.com/micro-clearfix-hack/
+============================================================================ */
+.clear {
+  *zoom: 1;
+}
+.clear:before,
+.clear:after {
+  content: "";
+  display: table;
+}
+.clear:after {
+  clear: both;
+}
+/* ==========================================================================
+   HTML5 Boilerplate mixins
+============================================================================ */
+.hide {
+  display: none;
+  visibility: hidden;
+}
+/**
+ * Hide visually and from screenreaders, but maintain layout
+ */
+/* ==========================================================================
+   LESS Elements 0.9
+   
+   A set of useful LESS mixins. More info at: http://lesselements.com
+============================================================================ */
+/**
+ * The Original Cottage Company (TOCC)
+ *  
+ * @title       Web style guide 
+ * @author      Alex Wyett (alex@carltonsoftware.co.uk)
+ * @document    Calendar css
+ * @description This file contains all of the structural and colour components 
+ *              of the calendar component for the TOCC template.
+ */
+/* ==========================================================================
+   Calendar mixins
+============================================================================ */
+.cal {
+  padding: 0;
+  margin-bottom: 10px;
+  -webkit-border-top-right-radius: 6px;
+  -webkit-border-bottom-right-radius: 3px;
+  -webkit-border-bottom-left-radius: 3px;
+  -webkit-border-top-left-radius: 6px;
+  -moz-border-radius-topright: 6px;
+  -moz-border-radius-bottomright: 3px;
+  -moz-border-radius-bottomleft: 3px;
+  -moz-border-radius-topleft: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-top-left-radius: 6px;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  background: #666666;
+  padding: 3px;
+  float: left;
+  margin-right: 8px;
+}
+.cal:last-child {
+  margin-right: 0;
+}
+.cal table {
+  font-weight: normal;
+  border-collapse: collapse;
+  width: 100%;
+}
+.cal table th {
+  border: none;
+  text-align: center;
+  padding: 8px;
+}
+.cal table th,
+.cal table thead td {
+  font-weight: normal;
+  font-size: 11px;
+  color: #FFF;
+  height: auto !important;
+  background: none;
+  border: none;
+  text-align: center;
+}
+.cal table tbody {
+  border-top: none;
+}
+.cal table tr.days th,
+.cal table tr.cal-sub-title th,
+.cal table tr.days td,
+.cal table tr.cal-sub-title td {
+  background: #dddddd;
+  color: #333333;
+  font-size: 9px;
+  border: none;
+  text-align: center;
+  padding: 8px;
+}
+.cal table tr.days th:first-child,
+.cal table tr.cal-sub-title th:first-child,
+.cal table tr.days td:first-child,
+.cal table tr.cal-sub-title td:first-child {
+  border-left: 1px solid #bababa;
+}
+.cal table tr.days th:last-child,
+.cal table tr.cal-sub-title th:last-child,
+.cal table tr.days td:last-child,
+.cal table tr.cal-sub-title td:last-child {
+  border-right: 1px solid #bababa;
+}
+.cal table td {
+  background: #dddddd;
+  color: #333333;
+  vertical-align: middle;
+  text-align: center;
+  border: 1px solid #bababa;
+  font-size: 11px;
+  padding: 8px;
+}
+.cal table td a {
+  width: 100%;
+  height: 100%;
+  display: block;
+  text-decoration: none;
+  color: #ffffff;
+}
+.cal table td.available,
+.cal table td.avaTd {
+  background: #939393;
+  color: #ffffff;
+  cursor: pointer;
+}
+.cal table td.changeover,
+.cal table td.cdAvaTd {
+  background: #444444;
+  color: #ffffff;
+  cursor: pointer;
+}
+.cal table td.selected,
+.cal table td.highlight {
+  background: #6865a1;
+}
+.cal table td.unavailable,
+.cal table td.notAvaTd,
+.cal table td.past {
+  background: #f9f9f9;
+  color: #d7d7d7;
+}
+.cal table td.unavailable a,
+.cal table td.notAvaTd a,
+.cal table td.past a {
+  text-decoration: none;
+  color: #333333;
+}
+.cal table td.highlightstart.available,
+.cal table td.selecteddatestart.available,
+.cal table td.selecteddatestart.avaTd {
+  background: linear-gradient(135deg, #939393, #939393 49%, #939393 49%, #6865a1 51%, #6865a1 51%, #6865a1 100%);
+  color: #ffffff;
+  cursor: pointer;
+}
+.cal table td.highlightstart.changeover,
+.cal table td.selecteddatestart.changeover,
+.cal table td.selecteddatestart.cdAvaTd {
+  background: linear-gradient(135deg, #444444, #444444 49%, #444444 49%, #6865a1 51%, #6865a1 51%, #6865a1 100%);
+  color: #ffffff;
+  cursor: pointer;
+}
+.cal table td.highlightend.available,
+.cal table td.highlightfinish.available,
+.cal table td.selecteddatefinish.available,
+.cal table td.selecteddatefinish.avaTd {
+  background: linear-gradient(135deg, #6865a1, #6865a1 49%, #6865a1 49%, #939393 51%, #939393 51%, #939393 100%);
+  color: #ffffff;
+  cursor: pointer;
+}
+.cal table td.highlightend.changeover,
+.cal table td.highlightfinish.changeover,
+.cal table td.selecteddatefinish.changeover,
+.cal table td.selecteddatefinish.cdAvaTd {
+  background: linear-gradient(135deg, #6865a1, #6865a1 49%, #6865a1 49%, #444444 51%, #444444 51%, #444444 100%);
+  color: #ffffff;
+  cursor: pointer;
+}
+.cal table td.highlightend.unavailable,
+.cal table td.highlightfinish.unavailable,
+.cal table td.selecteddatefinish.unavailable,
+.cal table td.selecteddatefinish.notAvaTd {
+  background: linear-gradient(135deg, #6865a1, #6865a1 49%, #6865a1 49%, #f9f9f9 51%, #f9f9f9 51%, #f9f9f9 100%);
+  color: #d7d7d7;
+}

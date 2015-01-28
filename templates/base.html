@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <title>{{ title|default('Api User Config') }}</title>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{ siteUrl('assets/css/styles.css') }}" rel="stylesheet">
-    {% block head %}{% endblock %}
+    {% block head %}
+    
+    {% endblock %}
+    
 </head>
 <body>
     <div class="container">
@@ -16,6 +18,7 @@
                 <li><a href="{{ baseUrl }}/bookings?brandcode={{ brandcode }}">View bookings</a></li>
                 <li><a href="{{ baseUrl }}/attributes?brandcode={{ brandcode }}">View attributes</a></li>
                 <li><a href="{{ baseUrl }}/pricecheck?brandcode={{ brandcode }}">Price Check</a></li>
+                <li><a href="{{ baseUrl }}/property?brandcode={{ brandcode }}">Properties</a></li>
             </ul>
         </div>
         {% block content %}
@@ -24,7 +27,7 @@
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    <script src="{{ siteUrl('assets/js/bootbox.min.js') }}"></script>
+    
     <script type="text/javascript">        
         /**
          * Shortcut to post json data to a url
@@ -34,8 +37,10 @@
          */
         jQuery.postJSON = function(url, data, callback) {
             jQuery.post(url, data, callback, "json");
-        }
-        {% block javascript %}{% endblock %}
+        };
+        {% block javascript %}
+        
+        {% endblock %}
         
     </script>
 </body>

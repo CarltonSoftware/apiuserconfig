@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block head %}
+{% endblock %}
+{% block javascriptsrc %}
+    <script src="{{ siteUrl('assets/js/search.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-8">
+            {% if exception is not null %}
+                <p class="alert alert-danger">{{ exception.getMessage }}</p>
+            {% else %}
+                <h2>{{ searchHelper.getTotal }} <small>found</small></h2>
+                <table class="table table-condensed table-hover table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Propref</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prop in searchHelper.getProperties %}
+                            <tr>
+                                <td>{{ prop.getPropref }}</td>
+                                <td><a href="property/{{ prop.getPropref }}?brandcode={{ brandcode }}">{{ prop.getName }}</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {{ searchHelper.getPaginationLinks|raw }}
+            {% endif %}
+        </div>
+        <div class="col-md-4">
+            {{ searchForm|raw }}
+        </div>
+    </div>
+
+{% endblock %}

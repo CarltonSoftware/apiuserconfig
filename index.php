@@ -5,6 +5,7 @@ require_once 'ApiUserForm.php';
 require_once 'SettingsForm.php';
 require_once 'EnquiryForm.php';
 require_once 'BookingsFilter.php';
+require_once 'SearchForm.php';
 require_once 'config.php';
 
 // Get api info
@@ -401,6 +402,118 @@ $app->get(
 
 // Define routes
 $app->get(
+    '/property', 
+    function () use (
+        $app, 
+        $info, 
+        $brandcode
+    ) {
+        
+    $filters = (filter_input_array(INPUT_GET)) ? filter_input_array(INPUT_GET) : array();
+    $formFilters = $filters;
+    if (isset($filters['brandcode'])) {
+        unset($filters['brandcode']);
+    }
+    
+    $form = SearchForm::factory(
+        array(), 
+        $formFilters
+    );
+    templateForm($form);
+    
+    try {
+        $search = new \tabs\api\property\SearchHelper();
+        $search->setFilters($filters);
+        $search->setSearchId('1');
+        $search->search();
+    
+        // Render index view
+        $app->render(
+            'properties.html',
+            array(
+                'info' => $info,
+                'brandcode' => $brandcode,
+                'searchHelper' => $search,
+                'searchForm' => $form
+            )
+        );
+    } catch (Exception $ex) {
+    
+        // Render index view
+        $app->render(
+            'properties.html',
+            array(
+                'info' => $info,
+                'brandcode' => $brandcode,
+                'exception' => $ex,
+                'searchForm' => $form
+            )
+        );
+    }
+});
+
+// Define routes
+$app->get(
+    '/property/:propref', 
+    function ($propref) use (
+        $app, 
+        $info, 
+        $brandcode
+    ) {
+    
+    try {
+        $property = \tabs\api\property\Property::getProperty($propref, $brandcode);
+        
+        $calendars = array();
+    
+        $cellContent = sprintf(
+            '<a href="pricecheck?property=%s&brandcode=%s&from={id}&nights=7&adults=1">{content}</a>',
+            $property->getPropref(),
+            $property->getBrandcode()
+        );
+        for ($i = 1; $i <= 12; $i++) {
+            $date = mktime(0, 0, 0, $i, 1, date('Y'));
+            $calendars[] = $property->getCalendarWidget(
+                $date, 
+                array(
+                    'start_day' => strtolower($property->getChangeOverDay()),
+                    'sevenRows' => true,
+                    'attributes' => sprintf(
+                        'class="calendar" data-month="%s"',
+                        date('Y-m', $date)
+                    ),
+                    'cal_cell_content' => $cellContent,
+                    'cal_cell_content_today' => $cellContent,
+                    'sevenRows' => true
+                )
+            );
+        }
+
+        // Render index view
+        $app->render(
+            'property.html',
+            array(
+                'info' => $info,
+                'brandcode' => $brandcode,
+                'property' => $property,
+                'calendars' => $calendars
+            )
+        );
+    } catch (Exception $ex) {
+        // Render index view
+        $app->render(
+            'property.html',
+            array(
+                'info' => $info,
+                'brandcode' => $brandcode,
+                'exception' => $ex
+            )
+        );
+    }
+});
+
+// Define routes
+$app->get(
     '/attributes', 
     function () use (
         $app, 
@@ -467,7 +580,7 @@ $app->get(
                     (integer) filter_input(INPUT_GET, 'pets')
                 );
             } catch (Exception $ex) {
-                $exception = $ex->getMessage();
+                $exception = $ex->getApiCode() . ': ' . $ex->getApiMessage();
             }
         } else {
             $exception = 'There were some errors with the data you\'ve added.';
@@ -563,16 +676,28 @@ function templateForm(&$form)
 
     // Set the template for checkboxes
     $form->each('getType', 'checkbox', function ($ele) {
-        $ele->getParent()
-            ->setTemplate(
-            '<div class="checkbox">
-                <label{implodeAttributes}>
-                    <a href="?brandcode={getFor}">
+        if (strlen($ele->getName()) == 2) {
+            $ele->getParent()
+                ->setTemplate(
+                '<div class="checkbox">
+                    <label{implodeAttributes}>
+                        <a href="?brandcode={getFor}">
+                            {getLabel}
+                        </a>
+                        {renderChildren}
+                    </label>
+                </div>'
+            );
+        } else {
+            $ele->getParent()
+                ->setTemplate(
+                '<div class="checkbox">
+                    <label{implodeAttributes}>
                         {getLabel}
-                    </a>
-                    {renderChildren}
-                </label>
-            </div>'
-        );
+                        {renderChildren}
+                    </label>
+                </div>'
+            );
+        }
     });
 }
