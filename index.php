@@ -463,15 +463,62 @@ $app->get(
     
     try {
         $property = \tabs\api\property\Property::getProperty($propref, $brandcode);
+    
+        $enquiry = null;
+        $enquiryForm = new EnquiryForm(
+            array(
+                'id' => 'enquiryform',
+                'class' => 'price-check'
+            ),
+            filter_input_array(INPUT_GET)
+        );
+        $enquiryForm->setBrandcode($brandcode)->buildDropdowns(
+            $property->getAccommodates()
+        )->getElementBy('getName', 'property')->setValue($property->getPropref());
+        $enquiryForm->setAttribute('action', '');
+        $enquiryForm->mapValues();
+        templateForm($enquiryForm);
+
+        if (filter_input(INPUT_GET, 'property')) {
+            $enquiryForm->validate();
+            $json = array('status' => 'ok', 'message' => '', 'enquiry' => array());
+            if ($enquiryForm->isValid()) {
+                try {
+                    $enquiry = \tabs\api\booking\Enquiry::create(
+                        filter_input(INPUT_GET, 'property'),
+                        filter_input(INPUT_GET, 'brandcode'),
+                        strtotime(filter_input(INPUT_GET, 'from')),
+                        strtotime(filter_input(INPUT_GET, 'to')),
+                        (integer) filter_input(INPUT_GET, 'adults'),
+                        (integer) filter_input(INPUT_GET, 'children'),
+                        (integer) filter_input(INPUT_GET, 'infants'),
+                        (integer) filter_input(INPUT_GET, 'pets')
+                    );
+                    
+                    $json['enquiry'] = array(
+                        'Basic Price' => $enquiry->getPricing()->getBasicPrice()
+                    );
+                    foreach ($enquiry->getPricing()->getExtras() as $extra) {
+                        $json['enquiry'][$extra->getDescription()] = $extra->getTotalPrice();
+                    }
+                    $json['enquiry']['Total Price'] = $enquiry->getPricing()->getTotalPrice();
+                    
+                } catch (Exception $ex) {
+                    $json['status'] = 'error';
+                    $json['message'] = $ex->getApiCode() . ': ' . $ex->getApiMessage();
+                    $json['statuscode'] = $ex->getApiCode();
+                }
+            } else {
+                $json['status'] = 'error';
+                $json['message'] = 'There were some errors with the data you\'ve added.';
+            }
+            
+            die(json_encode($json));
+        }
         
         $calendars = array();
     
-        $cellContent = sprintf(
-            '<a href="pricecheck?property=%s&brandcode=%s&from={id}&nights=7&adults=1">{content}</a>',
-            $property->getPropref(),
-            $property->getBrandcode()
-        );
-        for ($i = 1; $i <= 12; $i++) {
+        for ($i = 1; $i <= 24; $i++) {
             $date = mktime(0, 0, 0, $i, 1, date('Y'));
             $calendars[] = $property->getCalendarWidget(
                 $date, 
@@ -482,8 +529,8 @@ $app->get(
                         'class="calendar" data-month="%s"',
                         date('Y-m', $date)
                     ),
-                    'cal_cell_content' => $cellContent,
-                    'cal_cell_content_today' => $cellContent,
+                    'cal_cell_content' => '{content}',
+                    'cal_cell_content_today' => '{content}',
                     'sevenRows' => true
                 )
             );
@@ -496,7 +543,8 @@ $app->get(
                 'info' => $info,
                 'brandcode' => $brandcode,
                 'property' => $property,
-                'calendars' => $calendars
+                'calendars' => $calendars,
+                'form' => $enquiryForm
             )
         );
     } catch (Exception $ex) {
@@ -666,14 +714,15 @@ function templateForm(&$form)
     });
 
     // Set the submit button template
-    $form->getElementBy('getType', 'submit')
-    ->setClass('btn btn-primary btn-lg')
-    ->setTemplate(
-        '<div class="form-actions" style="margin-bottom: 10px;">
-            <input type="{getType}"{implodeAttributes}>
-        </div>'
-    );
-
+    if ($form->getElementBy('getType', 'submit')) {
+        $form->getElementBy('getType', 'submit')
+        ->setClass('btn btn-primary btn-lg')
+        ->setTemplate(
+            '<div class="form-actions" style="margin-bottom: 10px;">
+                <input type="{getType}"{implodeAttributes}>
+            </div>'
+        );
+    }
     // Set the template for checkboxes
     $form->each('getType', 'checkbox', function ($ele) {
         if (strlen($ele->getName()) == 2) {

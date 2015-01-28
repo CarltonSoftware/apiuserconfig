@@ -89,23 +89,72 @@ class EnquiryForm extends \aw\formfields\forms\StaticForm
      * 
      * @return \EnquiryForm
      */
+    public function buildDropdowns($numParty)
+    {
+        // Add date & property
+        $this->addChild(
+            new aw\formfields\fields\HiddenInput('from')
+        );
+        $this->addChild(
+            new aw\formfields\fields\HiddenInput('to')
+        );
+        $this->addChild(
+            new aw\formfields\fields\HiddenInput('property')
+        );
+        
+        // Fieldset
+        $fs = \aw\formfields\fields\Fieldset::factory(
+            'Price Enquiry',
+            array(
+                'class' => 'party-size'
+            )
+        );
+        
+        $fs->addChild(
+            self::getNewLabelAndSelect(
+                'Nights',
+                array_combine(range(1, 28), range(1, 28))
+            )->getElementBy('getType', 'select')->setValue(7)->getParent()
+        );
+        
+        // Add adults etc
+        foreach (array('adults', 'children', 'infants', 'pets') as $item) {
+            $fs->addChild(
+                self::getNewLabelAndSelect(
+                    ucfirst($item),
+                    range(0, $numParty)
+                )
+            );
+        }
+        
+        $this->addChild($fs);
+        
+        // Add brandcode
+        $this->addChild(
+            new aw\formfields\fields\HiddenInput(
+                'brandcode', 
+                array(
+                    'value' => $this->brandcode
+                )
+            )
+        );
+        
+        return $this;
+    }
+    
+    /**
+     * Build the form
+     * 
+     * @return \EnquiryForm
+     */
     public function build()
     {
         // Fieldset
         $fs = \aw\formfields\fields\Fieldset::factory(
             'Property',
             array(
-                'class' => 'property'
-            )
-        );
-        
-        // Add brandcode
-        $fs->addChild(
-            new aw\formfields\fields\HiddenInput(
-                'brandcode', 
-                array(
-                    'value' => $this->brandcode
-                )
+                'class' => 'property',
+                'id' => 'propFs'
             )
         );
 
@@ -178,6 +227,16 @@ class EnquiryForm extends \aw\formfields\forms\StaticForm
         }
         
         $this->addChild($fs);
+        
+        // Add brandcode
+        $this->addChild(
+            new aw\formfields\fields\HiddenInput(
+                'brandcode', 
+                array(
+                    'value' => $this->brandcode
+                )
+            )
+        );
         
         // Add submit button
         $this->addChild(

@@ -2,6 +2,10 @@
 {% block head %}
     <link href="{{ siteUrl('assets/css/property.css') }}" rel="stylesheet">
 {% endblock %}
+{% block footerjavascript %}
+    <script src="{{ siteUrl('assets/js/jquery.availabilityCalendar.js') }}"></script>
+    <script src="{{ siteUrl('assets/js/property.js') }}"></script>
+{% endblock %}
 
 {% block content %}
     <div class="row">
@@ -33,7 +37,8 @@
                         {% endfor %}
                     </div>
                     <div class="availability_enquiryform">
-                        
+                        {{ form|raw }}
+                        <div class="enquiry-response alert"></div>
                     </div>
                 </div>
                 
