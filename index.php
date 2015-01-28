@@ -6,6 +6,7 @@ require_once 'SettingsForm.php';
 require_once 'EnquiryForm.php';
 require_once 'BookingsFilter.php';
 require_once 'SearchForm.php';
+require_once 'UserExtension.php';
 require_once 'config.php';
 
 // Get api info
@@ -26,6 +27,7 @@ $app->hook('slim.before', function() use ($app, $baseUrl) {
 
 $app->view->parserExtensions = array(
     new \Slim\Views\TwigExtension(),
+    new UserExtention()
 );
 
 // Create userform
@@ -535,6 +537,19 @@ $app->get(
                 )
             );
         }
+        
+        // Get a date range price object array
+        $drps = $property->getDateRangePrices(date('Y'));
+        $ranges = '';
+        if (count($drps) > 0) {
+            foreach ($drps as $drp) {
+                $ranges .= sprintf(
+                    '<tr><td>%s</td><td>&pound;%s</td></tr>',
+                    call_user_func($drp->getDateRangeString, 'd F Y'),
+                    $drp->price
+                );
+            }
+        }
 
         // Render index view
         $app->render(
@@ -544,7 +559,8 @@ $app->get(
                 'brandcode' => $brandcode,
                 'property' => $property,
                 'calendars' => $calendars,
-                'form' => $enquiryForm
+                'form' => $enquiryForm,
+                'priceranges' => $ranges
             )
         );
     } catch (Exception $ex) {

@@ -18,7 +18,11 @@
                     <tbody>
                         <tr>
                             <td>Reference / Name:</td>
-                            <td>{{ property.getPropref }} {{ property.getName }}</td>
+                            <td>{{ property.getPropref }} - {{ property.getName }}</td>
+                        </tr>
+                        <tr>
+                            <td>Brand</td>
+                            <td>{{ property.getBrandcode }}</td>
                         </tr>
                         <tr>
                             <td>Address:</td>
@@ -26,8 +30,8 @@
                         </tr>
                     </tbody>
                 </table>
-                <h3>Availability</h3>
                 
+                <h3>Availability</h3>
                 <div class="availability">
                     <div class="availability_calendars availability_calendars-floated">
                         {% for cal in calendars %}
@@ -39,7 +43,40 @@
                     <div class="availability_enquiryform">
                         {{ form|raw }}
                         <div class="enquiry-response alert"></div>
+                
+                        <h3>Price Ranges</h3>
+                        <div class="price-range">
+                            <table class="table table-striped table-bordered table-condensed">
+                                <thead>
+                                    <th>Date</th>
+                                    <th>Price</th>
+                                </thead>
+                                <tbody>
+                                    {{ priceranges|raw }}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+                </div>
+                
+                <h3>Attributes</h3>
+                <div class="attributes">
+                    <table class="table table-striped table-bordered table-condensed">
+                        <thead>
+                            <th>Name</th>
+                            <th>Value</th>
+                        </thead>
+                        <tbody>
+                            {% for attr in property.getAttributes %}
+                            <tr>
+                                <td>{{ attr.getLabel }}</td>
+                                <td>
+                                    {{ attrVal(attr.getValue)|raw }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
                 
             {% endif %}

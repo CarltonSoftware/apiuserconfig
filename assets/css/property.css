@@ -210,6 +210,17 @@
   background: linear-gradient(135deg, #6865a1, #6865a1 49%, #6865a1 49%, #f9f9f9 51%, #f9f9f9 51%, #f9f9f9 100%);
   color: #d7d7d7;
 }
+.availability {
+  *zoom: 1;
+}
+.availability:before,
+.availability:after {
+  content: "";
+  display: table;
+}
+.availability:after {
+  clear: both;
+}
 .availability_calendars {
   width: 820px;
   float: left;
@@ -220,4 +231,7 @@
 .availability_enquiryform {
   width: 300px;
   float: right;
+}
+.availability_enquiryform .price-range {
+  font-size: 11px;
 }
