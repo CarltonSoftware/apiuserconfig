@@ -475,7 +475,7 @@ $app->get(
         $enquiryForm->setBrandcode($brandcode)->buildDropdowns(
             $property->getAccommodates()
         )->getElementBy('getName', 'property')->setValue($property->getPropref());
-        $enquiryForm->setAttribute('action', '');
+        $enquiryForm->setAttribute('action', '')->getElementBy('getName', 'propBrandcode')->setValue($property->getBrandcode());
         $enquiryForm->mapValues();
         templateForm($enquiryForm);
 
@@ -486,7 +486,7 @@ $app->get(
                 try {
                     $enquiry = \tabs\api\booking\Enquiry::create(
                         filter_input(INPUT_GET, 'property'),
-                        filter_input(INPUT_GET, 'brandcode'),
+                        filter_input(INPUT_GET, 'propBrandcode'),
                         strtotime(filter_input(INPUT_GET, 'from')),
                         strtotime(filter_input(INPUT_GET, 'to')),
                         (integer) filter_input(INPUT_GET, 'adults'),

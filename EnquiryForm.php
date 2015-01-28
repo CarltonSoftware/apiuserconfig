@@ -101,6 +101,9 @@ class EnquiryForm extends \aw\formfields\forms\StaticForm
         $this->addChild(
             new aw\formfields\fields\HiddenInput('property')
         );
+        $this->addChild(
+            new aw\formfields\fields\HiddenInput('propBrandcode')
+        );
         
         // Fieldset
         $fs = \aw\formfields\fields\Fieldset::factory(
