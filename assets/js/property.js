@@ -14,7 +14,7 @@ var enquiring = false;
 var getPrice = function(startDay, endDay) {
     if (!enquiring) {
         
-        _getEnquiryResponse().removeClass('alert-danger').removeClass('alert-success').html('');
+        _getEnquiryResponse().removeClass('alert-danger').removeClass('alert-success').html('Please wait...');
         
         var startStr = startDay.toString();
         var endStr = endDay.toString();
