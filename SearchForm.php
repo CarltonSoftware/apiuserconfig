@@ -139,7 +139,8 @@ class SearchForm extends \aw\formfields\forms\StaticForm
             'Pet Friendly' => 'pets',
             'Promoted' => 'promote',
             'Short Break Template' => 'sbtemplate',
-            'Short Breaks Only' => 'shortBreakCheck'
+            'Short Break Check' => 'shortBreakCheck',
+            'Short Breaks Only' => 'shortBreakOnly'
         );
         
         foreach ($bools as $label => $key) {
