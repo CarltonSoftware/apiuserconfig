@@ -417,6 +417,24 @@ $app->get(
         unset($filters['brandcode']);
     }
     
+    $additionalParams = array();
+    if (isset($filters['shortBreakCheck'])) {
+        $additionalParams['shortBreakCheck'] = $filters['shortBreakCheck'];
+        unset($filters['shortBreakCheck']);
+    }
+    if (isset($filters['shortBreakOnly'])) {
+        $additionalParams['shortBreakOnly'] = $filters['shortBreakOnly'];
+        unset($filters['shortBreakOnly']);
+    }
+    if (isset($filters['page'])) {
+        $additionalParams['page'] = $filters['page'];
+        unset($filters['page']);
+    }
+    if (isset($filters['pageSize'])) {
+        $additionalParams['pageSize'] = $filters['pageSize'];
+        unset($filters['pageSize']);
+    }
+    
     $form = SearchForm::factory(
         array(), 
         $formFilters
@@ -427,7 +445,20 @@ $app->get(
         $search = new \tabs\api\property\SearchHelper();
         $search->setFilters($filters);
         $search->setSearchId('1');
+        if (count($additionalParams) > 0) {
+            foreach ($additionalParams as $key => $val) {
+                $accessor = 'set' . ucfirst($key);
+                if (method_exists($search, $accessor)) {
+                    $search->$accessor($val);
+                } else {
+                    $search->setAdditionalParam($key, $val);
+                }
+            }
+        }
         $search->search();
+        
+        // Add in brandcode back for pagintation
+        $search->addFilter('brandcode', $brandcode);
     
         // Render index view
         $app->render(
@@ -436,7 +467,8 @@ $app->get(
                 'info' => $info,
                 'brandcode' => $brandcode,
                 'searchHelper' => $search,
-                'searchForm' => $form
+                'searchForm' => $form,
+                'apiRoutes' => \tabs\api\client\ApiClient::getApi()->getRoutes()
             )
         );
     } catch (Exception $ex) {

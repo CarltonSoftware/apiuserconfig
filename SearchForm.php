@@ -80,6 +80,45 @@ class SearchForm extends \aw\formfields\forms\StaticForm
         
         $fs->addChild(
             self::getNewLabelAndSelect(
+                'Nights',
+                array(
+                    'N/A' => '',
+                    '2' => '2',
+                    '3' => '3',
+                    '4' => '3',
+                    '5' => '3',
+                    '6' => '3',
+                    '7' => '3',
+                    '8' => '3',
+                    '9' => '9',
+                    '10' => '10',
+                    '11' => '11',
+                    '12' => '12',
+                    '13' => '13',
+                    '14' => '14',
+                    '15' => '15',
+                    '16' => '16',
+                    '17' => '17',
+                    '18' => '18',
+                    '19' => '19',
+                    '20' => '20',
+                    '21' => '21',
+                    '22' => '22',
+                    '23' => '23',
+                    '24' => '24',
+                    '25' => '25',
+                    '26' => '26',
+                    '27' => '27',
+                    '28' => '28'
+                )
+            )->getElementBy('getType', 'select')
+                ->setName('nights')
+                ->setId('nights')
+                ->getParent()
+        );
+        
+        $fs->addChild(
+            self::getNewLabelAndSelect(
                 'Plus Minus days',
                 array(
                     'N/A' => '',
@@ -99,7 +138,8 @@ class SearchForm extends \aw\formfields\forms\StaticForm
             'On Special Offer' => 'specialOffer',
             'Pet Friendly' => 'pets',
             'Promoted' => 'promote',
-            'Accepts Short Breaks' => 'sbtemplate'
+            'Short Break Template' => 'sbtemplate',
+            'Short Breaks Only' => 'shortBreakCheck'
         );
         
         foreach ($bools as $label => $key) {
@@ -112,6 +152,21 @@ class SearchForm extends \aw\formfields\forms\StaticForm
                     ->getParent()
             );
         }
+        
+        $fs->addChild(
+            self::getNewLabelAndSelect(
+                'Page Size',
+                array(
+                    '10' => '10',
+                    '20' => '20',
+                    '50' => '50',
+                    '100' => '100'
+                )
+            )->getElementBy('getType', 'select')
+                ->setName('pageSize')
+                ->setId('pageSize')
+                ->getParent()
+        );
         
         // Add fieldset to form
         $form->addChild($fs);

@@ -30,6 +30,12 @@
                 </table>
                 {{ searchHelper.getPaginationLinks|raw }}
             {% endif %}
+            
+            <div class="well">
+                {% for route in apiRoutes %}
+                <p>{{ route }}</p>
+                {% endfor %}
+            </div>
         </div>
         <div class="col-md-4">
             {{ searchForm|raw }}
