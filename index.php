@@ -435,6 +435,24 @@ $app->get(
         unset($filters['pageSize']);
     }
     
+    $areas = \tabs\api\utility\Utility::getAreas();
+    $areas = array_flip($areas);
+    SearchForm::$areas = array_merge(
+        array(
+            'Any' => ''
+        ),
+        $areas
+    );
+    
+    $locations = \tabs\api\utility\Utility::getLocations();
+    $locations = array_flip($locations);
+    SearchForm::$locations = array_merge(
+        array(
+            'Any' => ''
+        ),
+        $locations
+    );
+    
     $form = SearchForm::factory(
         array(), 
         $formFilters

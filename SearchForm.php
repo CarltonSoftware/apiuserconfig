@@ -29,6 +29,21 @@
 class SearchForm extends \aw\formfields\forms\StaticForm
 {
     /**
+     * Areas array
+     * 
+     * @var array
+     */
+    public static $areas = array();
+    
+    /**
+     * Locations array
+     * 
+     * @var array
+     */
+    public static $locations = array();
+
+
+    /**
      * Constructor
      * 
      * @param array  $attributes Form attributes
@@ -52,6 +67,24 @@ class SearchForm extends \aw\formfields\forms\StaticForm
                 'class' => 'search-form'
             )
         );
+        
+        if (count(self::$areas) > 0) {
+            $fs->addChild(
+                self::getNewLabelAndSelect(
+                    'Area',
+                    self::$areas
+                )
+            );
+        }
+        
+        if (count(self::$locations) > 0) {
+            $fs->addChild(
+                self::getNewLabelAndSelect(
+                    'Location',
+                    self::$locations
+                )
+            );
+        }
 
         // Add text fields
         $textfields = array(
@@ -76,7 +109,9 @@ class SearchForm extends \aw\formfields\forms\StaticForm
         }
         
         $fs->getElementBy('getId', 'fromDate')->setAttribute(
-            'placeholder', 'In YYYY-mm-dd format');
+            'placeholder',
+            'In YYYY-mm-dd format'
+        )->setTemplate('<input type="date"{implodeAttributes}>');
         
         $fs->addChild(
             self::getNewLabelAndSelect(
