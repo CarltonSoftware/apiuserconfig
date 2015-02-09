@@ -55,12 +55,23 @@ class SettingsForm extends \aw\formfields\forms\StaticForm
 
         // Add key field
         $fs->addChild(
-            self::getNewLabelAndTextField(
-                'Key'
-            )->getElementBy('getType', 'text')
+            self::getNewLabelAndSelect(
+                'Key',
+                array(
+                    'Select' => '',
+                    'HMAC Security' => 'hmac',
+                    'liveSite' => 'liveSite',
+                    'useNewImageCaching' => 'useNewImageCaching',
+                    'creditCardPercentage (iframe setting, default is 2%)' => 'creditCardPercentage',
+                    'sdCreditCardPercentage (iframe setting, default is 2%)' => 'sdCreditCardPercentage',
+                    'depositType (default is 1/3)' => 'depositType',
+                    'balanceDueDays (default is 28 days)' => 'balanceDueDays',
+                    'petExtraCode (replaces PET)' => 'petExtraCode',
+                    'newDateRangePrice (includes zero price periods)' => 'newDateRangePrice'
+                )
+            )->getElementBy('getType', 'select')
                 ->setName('key')
                 ->setId('key')
-                ->setAttribute('placeholder', 'Alpha/Numeric characters only')
                 ->setRule('ValidSlug', true)
                 ->getParent()
                 ->setLabel('Setting Name')
