@@ -1,18 +1,17 @@
 <?php
 
+$brandcode = 'zz';
+if (filter_input(INPUT_GET, 'brandcode')) {
+    $brandcode = filter_input(INPUT_GET, 'brandcode');
+}
+
 // Connect to the api
 \tabs\api\client\ApiClient::factory(
-    "http://yourbrandcode.api.carltonsoftware.co.uk",
-    'apikey',
+   "http://{$brandcode}.api.carltonsoftware.co.uk",
+    'key',
     'secret'
 );
 
-try {
-    $apicompanies = \tabs\api\utility\Utility::getAllBrands();
-    $brands = array();
-    foreach ($apicompanies as $company) {
-        $brands[$company['brandcode']] = $company['name'];
-    }
-} catch (Exception $ex) {
-    die($ex->getMessage());
-}
+$brands = array(
+    'zz' => 'Dummy'
+);
