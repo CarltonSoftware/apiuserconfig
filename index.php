@@ -626,6 +626,57 @@ $app->get(
     }
 });
 
+
+
+// Define routes
+$app->get(
+    '/keycount/:key', 
+    function ($key) use (
+        $app, 
+        $info, 
+        $brandcode
+    ) {
+    
+    try {
+        
+        $apiKey = \tabs\api\core\ApiUser::getUser($key);
+        $counts = \tabs\api\utility\Utility::getRequestCount($key);
+        $monthCounts = array();
+        for ($i = 1; $i <= 12; $i++) {
+            $monthCounts[$i] = 0;
+            $year = date('Y');
+            if (isset($counts->$year) 
+                && isset($counts->$year->months) 
+                && isset($counts->$year->months->$i)
+                && isset($counts->$year->months->$i->total)
+            ) {
+                $monthCounts[$i] = $counts->$year->months->$i->total;
+            }
+        }
+
+        // Render index view
+        $app->render(
+            'keycount.html',
+            array(
+                'info' => $info,
+                'brandcode' => $brandcode,
+                'count' => $monthCounts,
+                'key' => $apiKey
+            )
+        );
+    } catch (Exception $ex) {
+        // Render index view
+        $app->render(
+            'property.html',
+            array(
+                'info' => $info,
+                'brandcode' => $brandcode,
+                'exception' => $ex
+            )
+        );
+    }
+});
+
 // Define routes
 $app->get(
     '/attributes', 

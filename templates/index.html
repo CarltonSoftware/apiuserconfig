@@ -20,7 +20,7 @@
                             {% if userException == false %}
                                 {% for user in users %}
                                     <tr>
-                                        <td>{{ user.getKey }}</td>
+                                        <td><a href="{{ baseUrl }}/keycount/{{ user.getKey }}?brandcode={{ brandcode }}">{{ user.getKey }}</a></td>
                                         <td>{{ user.getEmail }}</td>
                                         <td>{{ user.getSecret }}</td>
                                         <td>

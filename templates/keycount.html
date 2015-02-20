@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block head %}
+    <link href="{{ siteUrl('assets/css/property.css') }}" rel="stylesheet">
+{% endblock %}
+{% block footerjavascript %}
+    <script src="{{ siteUrl('assets/js/Chart.min.js') }}"></script>
+    
+    <script>
+    var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
+    var barChartData = {
+            labels : ["Jan","Feb","Mar","Apr","May","Jun","Jul", "Aug", "Sept", "Oct", "Nov", "Dec"],
+            datasets : [
+                {
+                    fillColor : "rgba(220,220,220,0.5)",
+                    strokeColor : "rgba(220,220,220,0.8)",
+                    highlightFill: "rgba(220,220,220,0.75)",
+                    highlightStroke: "rgba(220,220,220,1)",
+                    data : [{{ count|join(',')}}]
+                }
+            ]
+    }
+    window.onload = function(){
+        var ctx = document.getElementById("canvas").getContext("2d");
+        window.myBar = new Chart(ctx).Bar(barChartData, {
+                responsive : true
+        });
+    }
+    </script>
+{% endblock %}
+
+{% block content %}
+
+    {% set amount = 0 %}
+    {% for i in count %}
+        {% set amount = amount + i %}
+    {% endfor %}
+    
+    <div class="row">
+        <h2>This years api calls for user <small>{{ key.getKey }}</small></h2>
+        <p>The users email address is {{ key.getEmail }}.  There have been {{ amount }} calls made in total.</p>
+        
+        <div style="width: 50%">
+            <canvas id="canvas" height="450" width="600"></canvas>
+        </div>
+    </div>
+{% endblock %}
