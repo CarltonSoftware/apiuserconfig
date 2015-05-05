@@ -765,6 +765,46 @@ $app->get(
     );
 });
 
+// Define routes
+$app->get(
+    '/status', 
+    function () use (
+        $app, 
+        $info,
+        $brandcode
+    ) {
+    
+    $exception = null;
+    $statuses = array();
+    $statusesReq = \tabs\api\client\ApiClient::getApi()->get('/api/dbstatus');
+    if ($statusesReq->status == '200') {
+        if (isset($statusesReq->response->db->tabs) 
+            && isset($statusesReq->response->db->tabs->tables)
+        ) {
+            foreach (get_object_vars($statusesReq->response->db->tabs->tables) as $table => $status) {
+                $st = new stdClass();
+                $st->table = $table;
+                $st->rows = $status->rows;
+                $st->data_length = $status->data_length;
+                array_push($statuses, $st);
+            }
+        }
+    } else {
+        $exception = 'Unable to fetch db status';
+    }
+    
+    // Render index view
+    $app->render(
+        'status.html',
+        array(
+            'info' => $info,
+            'brandcode' => $brandcode,
+            'statuses' => $statuses,
+            'exception' => $exception
+        )
+    );
+});
+
 // Run app
 $app->run();
 
