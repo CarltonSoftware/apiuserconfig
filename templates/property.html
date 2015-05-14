@@ -64,11 +64,13 @@
                 </div>
                 
                 <h3>Images</h3>
-                {% for image in property.getImages %}
-                
-                    {{ image.createImageTag|raw }}
-                
-                {% endfor %}
+                <div class="images">
+                    {% for image in property.getImages %}
+                    <a href="{{ image.createImageSrc('width', 1000) }}" target="_blank">
+                        {{ image.createImageTag('tocc')|raw }}
+                    </a>
+                    {% endfor %}
+                </div>
                 
                 {% if property.getSpecialOffers|length > 0 %}
                     <h3>Special Offers</h3>
