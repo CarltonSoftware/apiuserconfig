@@ -610,7 +610,8 @@ $app->get(
                 'property' => $property,
                 'calendars' => $calendars,
                 'form' => $enquiryForm,
-                'priceranges' => $ranges
+                'priceranges' => $ranges,
+                'apiRoutes' => \tabs\api\client\ApiClient::getApi()->getRoutes()
             )
         );
     } catch (Exception $ex) {

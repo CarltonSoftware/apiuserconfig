@@ -21,6 +21,10 @@
                             <td>{{ property.getPropref }} - {{ property.getName }}</td>
                         </tr>
                         <tr>
+                            <td>Area / Location</td>
+                            <td>{{ property.getArea.getName }} ({{ property.getArea.getCode }}) {{ property.getLocation.getName }} ({{ property.getLocation.getCode }})</td>
+                        </tr>
+                        <tr>
                             <td>Brand</td>
                             <td>{{ property.getBrandcode }}</td>
                         </tr>
@@ -59,21 +63,32 @@
                     </div>
                 </div>
                 
-                <h3>Special Offers</h3>
-                <div class="offers">
-                    {% for offer in property.getSpecialOffers %}
-                        {{ offer.getFromDate|date('d-m-Y') }}
-                        {{ offer.getToDate|date('d-m-Y') }}
-                        {{ offer.getDescription }}
-                    {% endfor %}
-                </div>
+                <h3>Images</h3>
+                {% for image in property.getImages %}
                 
+                    {{ image.createImageTag|raw }}
+                
+                {% endfor %}
+                
+                {% if property.getSpecialOffers|length > 0 %}
+                    <h3>Special Offers</h3>
+                    <div class="offers">
+                        {% for offer in property.getSpecialOffers %}
+                            {{ offer.getFromDate|date('d-m-Y') }}
+                            {{ offer.getToDate|date('d-m-Y') }}
+                            {{ offer.getDescription }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                {% if property.getComments|length > 0 %}
                 <h3>Comments</h3>
                 <div class="comments">
                     {% for comment in property.getComments %}
                         <p><strong>{{ comment.getName }}</strong> {{ comment.getComment }}</p>
                     {% endfor %}
                 </div>
+                {% endif %}
                 
                 <h3>Attributes</h3>
                 <div class="attributes">
@@ -96,6 +111,12 @@
                 </div>
                 
             {% endif %}
+            
+            <div class="well" style="word-wrap: break-word;">
+                {% for route in apiRoutes %}
+                <p>{{ route }}</p>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
