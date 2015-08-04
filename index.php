@@ -397,7 +397,8 @@ $app->get(
             'sForm' => $sForm,
             'brandcode' => $brandcode,
             'booking' => $booking,
-            'bookingException' => $bookingException
+            'bookingException' => $bookingException,
+            'apiRoutes' => \tabs\api\client\ApiClient::getApi()->getRoutes()
         )
     );
 });
