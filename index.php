@@ -813,13 +813,15 @@ $app->get(
     function () use (
         $app,
         $info,
-        $brands
+        $brands,
+        $brandcode
     ) {
         // Render index view
         $app->render(
             'users.html',
             array(
                 'info' => $info,
+                'brandcode' => $brandcode,
                 'brands' => $brands
             )
         );
