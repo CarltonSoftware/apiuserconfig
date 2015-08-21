@@ -8,6 +8,9 @@
         .sortorder.reverse:after {
             content: '\25b2';
         }
+        .highlighted {
+            background: lightblue;
+        }
     </style>
 {% endblock %}
 
@@ -50,11 +53,11 @@
             </thead>
             <tbody>
                 <tr ng-repeat="user in users | filter:{$:filterValue} | orderBy:predicate:reverse">
-                    <td>~~ user.brand.name ~~</td>
-                    <td>~~ user.brand.brandcode ~~</td>
-                    <td>~~ user.key ~~</td>
-                    <td>~~ user.secret ~~</td>
-                    <td>~~ user.email ~~</td>
+                    <td ng-bind-html="user.brand.name | highlight:filterValue"></td>
+                    <td ng-bind-html="user.brand.brandcode | highlight:filterValue"></td>
+                    <td ng-bind-html="user.key | highlight:filterValue"></td>
+                    <td ng-bind-html="user.secret | highlight:filterValue"></td>
+                    <td ng-bind-html="user.email | highlight:filterValue"></td>
                     <td><a href="{{ baseUrl }}/keycount/~~ user.key ~~?brandcode=~~ user.brand.brandcode ~~" class="btn btn-sm btn-primary">View usage</a></td>
                 </tr>
             </tbody>
@@ -73,7 +76,15 @@
             .config(function($interpolateProvider) {
                 $interpolateProvider.startSymbol('~~');
                 $interpolateProvider.endSymbol('~~');
-            }).controller('UsersController', ['$scope', '$log', '$http', '$filter', function($scope, $log, $http, $filter) {
+            }).filter('highlight', ['$sce', function($sce) {
+                return function(text, phrase) {
+                    if (phrase) {
+                        text = text.replace(new RegExp('('+phrase+')', 'gi'), '<span class="highlighted">$1</span>');
+                    }
+
+                    return $sce.trustAsHtml(text)
+                }
+            }]).controller('UsersController', ['$scope', '$log', '$http', '$filter', function($scope, $log, $http, $filter) {
                 
                 $scope.users = [];
                 $scope.brands = [
