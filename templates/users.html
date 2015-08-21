@@ -50,12 +50,12 @@
             </thead>
             <tbody>
                 <tr ng-repeat="user in users | filter:{$:filterValue} | orderBy:predicate:reverse">
-                    <td>// user.brand.name //</td>
-                    <td>// user.brand.brandcode //</td>
-                    <td>// user.key //</td>
-                    <td>// user.secret //</td>
-                    <td>// user.email //</td>
-                    <td><a href="" class="btn btn-small btn-info">View usage</a></td>
+                    <td>~~ user.brand.name ~~</td>
+                    <td>~~ user.brand.brandcode ~~</td>
+                    <td>~~ user.key ~~</td>
+                    <td>~~ user.secret ~~</td>
+                    <td>~~ user.email ~~</td>
+                    <td><a href="{{ baseUrl }}/keycount/~~ user.key ~~?brandcode=~~ user.brand.brandcode ~~" class="btn btn-sm btn-primary">View usage</a></td>
                 </tr>
             </tbody>
         </table>
@@ -71,8 +71,8 @@
             
             var app = angular.module('usersApp', [])
             .config(function($interpolateProvider) {
-                $interpolateProvider.startSymbol('//');
-                $interpolateProvider.endSymbol('//');
+                $interpolateProvider.startSymbol('~~');
+                $interpolateProvider.endSymbol('~~');
             }).controller('UsersController', ['$scope', '$log', '$http', '$filter', function($scope, $log, $http, $filter) {
                 
                 $scope.users = [];
