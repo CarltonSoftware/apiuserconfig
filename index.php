@@ -807,6 +807,51 @@ $app->get(
     );
 });
 
+// Define routes
+$app->get(
+    '/users', 
+    function () use (
+        $app,
+        $info,
+        $brands
+    ) {
+        // Render index view
+        $app->render(
+            'users.html',
+            array(
+                'info' => $info,
+                'brands' => $brands
+            )
+        );
+    }
+);
+
+// Define routes
+$app->post(
+    '/users', 
+    function () use (
+        $app
+    ) {
+        $users = array();
+        try {
+            $apiUsers = \tabs\api\core\ApiUser::getUsers();
+            foreach ($apiUsers as $user) {
+                $users[] = array(
+                    'key' => $user->getKey(),
+                    'secret' => $user->getSecret(),
+                    'email' => $user->getEmail()
+                );
+            }
+        } catch (Exception $e) {}
+    
+        die(
+            json_encode(
+                $users
+            )
+        );
+    }
+);
+
 // Run app
 $app->run();
 
