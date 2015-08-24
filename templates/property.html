@@ -112,6 +112,24 @@
                     </table>
                 </div>
                 
+                <h3>Descriptions</h3>
+                <div class="descriptiontypes">
+                    <table class="table table-striped table-bordered table-condensed">
+                        <thead>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </thead>
+                        <tbody>
+                            {% for desc in property.getAllDescriptions %}
+                            <tr>
+                                <td>{{ desc['descriptiontype'] }}</td>
+                                <td>{{ desc['description'] | raw }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
             {% endif %}
             
             <div class="well" style="word-wrap: break-word;">
