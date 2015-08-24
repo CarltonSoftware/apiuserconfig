@@ -34,6 +34,18 @@
                             <td>Dates:</td>
                             <td>{{ booking.getFromDateString }} to {{ booking.getToDateString }}</td>
                         </tr>
+                        <tr>
+                            <td>Adults</td>
+                            <td>{{ booking.getAdults }}</td>
+                        </tr>
+                        <tr>
+                            <td>Children</td>
+                            <td>{{ booking.getChildren }}</td>
+                        </tr>
+                        <tr>
+                            <td>Infants</td>
+                            <td>{{ booking.getInfants }}</td>
+                        </tr>
 
                         {% if booking.getPets > 0 %}
                         <tr>
