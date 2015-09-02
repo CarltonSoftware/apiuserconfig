@@ -666,6 +666,34 @@ $app->get(
     }
 });
 
+$app->get(
+    '/property/:propref/tabsbookings',
+    function ($propref) use (
+        $app, 
+        $info, 
+        $brandcode
+    ) {
+
+    $exception = false;
+    $property = null;
+    try {
+        $property = \tabs\api\property\Property::getProperty($propref, $brandcode);
+    } catch (Exception $ex) {
+        $exception = $ex->getMessage();
+    }
+
+    $app->render(
+        'propertytabsbookings.html',
+        array(
+            'info' => $info,
+            'brandcode' => $brandcode,
+            'property' => $property,
+            'exception' => $exception
+        )
+    );
+
+});
+
 
 
 // Define routes

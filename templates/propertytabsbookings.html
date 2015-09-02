@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% if property and exception == false %}
+
+        <h3>Tabs bookings for <a href="{{ baseUrl }}/property/{{ property.getPropref }}?brandcode={{ brandcode }}">{{ property }}</a></h3>
+    
+        <table class="table table-striped table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>Booking reference</th>
+                    <th>Customer reference</th>
+                    <th>Dates</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in property.getBookings %}
+                    <tr>
+                        <td><a href="{{ baseUrl }}/tabsbooking?bookingref={{ booking.getBookingRef }}&amp;brandcode={{ brandcode }}">{{ booking.getBookingRef }}</a></td>
+                        <td>{{ booking.getCusref }} </td>
+                        <td>{{ booking.getFromDate|date("j M Y") }} to {{ booking.getToDate|date("j M Y") }}</td>
+                        <td><a class="btn btn-primary" href="{{ baseUrl }}/tabsbooking?bookingref={{ booking.getBookingRef }}&amp;brandcode={{ brandcode }}">Detail</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    {% else %}
+        <p class="alert alert-danger">{{ exception }}</p>
+    {% endif %}
+
+{% endblock %}
