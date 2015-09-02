@@ -384,6 +384,7 @@ $app->get(
     $booking = null;
     try {
         $booking = \tabs\api\booking\Booking::createBookingFromId($id);
+        $tabsBooking = $booking->getTabsBooking();
     } catch (Exception $ex) {
         $bookingException = $ex->getMessage();
     }
@@ -397,11 +398,48 @@ $app->get(
             'sForm' => $sForm,
             'brandcode' => $brandcode,
             'booking' => $booking,
+            'tabsBooking' => (isset($tabsBooking) ? $tabsBooking : null),
             'bookingException' => $bookingException,
             'apiRoutes' => \tabs\api\client\ApiClient::getApi()->getRoutes()
         )
     );
 });
+
+
+
+$app->get(
+    '/tabsbooking',
+    function () use (
+        $app,
+        $info,
+        $brandcode
+    ) {
+
+    $tabsBookingException = false;
+    $tabsBooking = null;
+    if (filter_input(INPUT_GET, 'bookingref')) {
+        $bookingRef = filter_input(INPUT_GET, 'bookingref');
+        try {
+            $tabsBooking = \tabs\api\booking\TabsBooking::getBooking($bookingRef, $brandcode);
+        } catch (Exception $ex) {
+            $tabsBookingException = $ex->getMessage();
+        }
+    }
+
+    $app->render(
+        'tabsbooking.html',
+        array(
+            'info' => $info,
+            'brandcode' => $brandcode,
+            'tabsBooking' => $tabsBooking,
+            'tabsBookingException' => $tabsBookingException,
+            'apiRoutes' => \tabs\api\client\ApiClient::getApi()->getRoutes()
+        )
+    );
+
+});
+
+
 
 // Define routes
 $app->get(

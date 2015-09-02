@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <form class="form-inline">
+        <div class="form-group">
+            <label for="bookingref">Booking reference</label>
+            <input type="text" class="form-control" id="bookingref" name="bookingref" value="{{ tabsBooking.getBookingRef }}">
+        </div>
+        <input type="hidden" name="brandcode" value="{{ brandcode }}">
+        <input type="submit" class="btn btn-primary" value="Find">
+    </form>
+
+    {% if tabsBooking %}
+
+        <h3>Tabs booking</h3>
+        <table class="table table-bordered table-condensed">
+            <tbody>
+                <tr>
+                    <th>Booking reference</th>
+                    <td>{{ tabsBooking.getBookingRef }}</td>
+                </tr>
+                <tr>
+                    <th>Status</th>
+                    <td>{{ tabsBooking.getStatus }}</td>
+                </tr>
+                <tr>
+                    <th>Dates</th>
+                    <td>{{ tabsBooking.getFromDate|date("j M Y") }} to {{ tabsBooking.getToDate|date("j M Y") }}</td>
+                </tr>
+                <tr>
+                    <th>Property</th>
+                    <td>{{ tabsBooking.getProperty }} <a href="{{ baseUrl }}/property/{{ tabsBooking.getProperty.getPropref }}?brandcode={{ brandcode }}" class="btn btn-xs btn-primary">View property</a></td>
+                </tr>
+                <tr>
+                    <th>Brand</th>
+                    <td>{{ tabsBooking.getBrandCode }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Customer</h3>
+        <table class="table table-bordered table-condensed">
+            <tbody>
+                <tr>
+                    <th>Customer reference</th>
+                    <td>{{ tabsBooking.getCusref }}</td>
+                </tr>
+                <tr>
+                    <th>Surname</th>
+                    <td>{{ tabsBooking.getSurname }}</td>
+                </tr>
+                <tr>
+                    <th>Party details</th>
+                    <td>{{ tabsBooking.getPartyDetails }}</td>
+                </tr>
+                <tr>
+                    <th>Adults</th>
+                    <td>{{ tabsBooking.getAdults }}</td>
+                </tr>
+                <tr>
+                    <th>Children</th>
+                    <td>{{ tabsBooking.getChildren }}</td>
+                </tr>
+                <tr>
+                    <th>Infants</th>
+                    <td>{{ tabsBooking.getInfants }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Payments</h3>
+        <h4>Commission</h4>
+        <table class="table table-bordered table-condensed">
+            <tbody>
+                <tr>
+                    <th>Commission due to owner</th>
+                    <td>£{{ tabsBooking.getCommissionDueToOwner }}</td>
+                </tr>
+                <tr>
+                    <th>Commission outstanding to owner</th>
+                    <td>£{{ tabsBooking.getCommissionOutstandingToOwner }}</td>
+                </tr>
+                <tr>
+                    <th>Commission paid to owner</th>
+                    <td>£{{ tabsBooking.getCommissionPaidToOwner }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <h4>Price</h4>
+        <table class="table table-bordered table-condensed">
+            <tbody>
+                <tr>
+                    <th>Total price</th>
+                    <td>£{{ tabsBooking.getTotalPrice }}</td>
+                </tr>
+                <tr>
+                    <th>Deposit price</th>
+                    <td>£{{ tabsBooking.getDepositPrice }}</td>
+                </tr>
+                <tr>
+                    <th>Booking fee</th>
+                    <td>£{{ tabsBooking.getBookingFee }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <h4>Balance</h4>
+        <table class="table table-bordered table-condensed">
+            <tbody>
+                <tr>
+                    <th>Due</th>
+                    <td>{{ tabsBooking.getBalanceDueDate|date("j M Y") }}</td>
+                </tr>
+                <tr>
+                    <th>Amount</th>
+                    <td>£{{ tabsBooking.getBalanceAmount }}</td>
+                </tr>
+          </tbody>
+        </table>
+        <h4>Security deposit</h4>
+        <table class="table table-bordered table-condensed">
+            <tbody>
+                <tr>
+                    <th>Due</th>
+                    <td>{{ tabsBooking.getSecurityDepositDueDate|date("j M Y") }}</td>
+                </tr>
+                <tr>
+                    <th>Amount</th>
+                    <td>£{{ tabsBooking.getSecurityDepositAmount }}</td>
+                </tr>
+                <tr>
+                    <th>Paid</th>
+                    <td>£{{ tabsBooking.getSecurityDepositPaid }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+    {% elseif tabsBookingException %}
+        <p class="alert alert-danger">{{ tabsBookingException }}</p>
+    {% endif %}
+
+{% endblock %}

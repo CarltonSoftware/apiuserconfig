@@ -57,7 +57,12 @@
                         {% if booking.isConfirmed %}
                         <tr>
                             <td>Tabs web booking number:</td>
-                            <td>W{{ booking.getWNumber }}</td>
+                            <td>
+                                W{{ booking.getWNumber }}
+                                {% if tabsBooking %}
+                                    <a href="{{ baseUrl }}/tabsbooking?bookingref={{ booking.getTabsBooking.getBookingRef }}&amp;brandcode={{ brandcode }}" class="btn btn-xs btn-primary">View Tabs booking</a>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% endif %}
                     </tbody>
