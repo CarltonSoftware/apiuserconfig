@@ -23,7 +23,7 @@
                         {% for prop in searchHelper.getProperties %}
                             <tr>
                                 <td>{{ prop.getPropref }}</td>
-                                <td><a href="property/{{ prop.getPropref }}?brandcode={{ brandcode }}">{{ prop.getName }}</a></td>
+                                <td><a href="property/{{ prop.getId }}?brandcode={{ brandcode }}">{{ prop.getName }}</a></td>
                             </tr>
                         {% endfor %}
                     </tbody>

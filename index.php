@@ -553,7 +553,13 @@ $app->get(
     ) {
     
     try {
-        $property = \tabs\api\property\Property::getProperty($propref, $brandcode);
+        
+        $propbrandcode = $brandcode;
+        if (stristr($propref, '_')) {
+            list($propref, $propbrandcode) = explode('_', $propref, 2);
+        }
+        
+        $property = \tabs\api\property\Property::getProperty($propref, $propbrandcode);
     
         $enquiry = null;
         $enquiryForm = new EnquiryForm(
