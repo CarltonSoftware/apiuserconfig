@@ -595,6 +595,7 @@ $app->get(
                     $json['enquiry'] = array(
                         'Basic Price' => $enquiry->getPricing()->getBasicPrice()
                     );
+                    $json['enquiry']['Security Deposit'] = $enquiry->getPricing()->getSecurityDeposit();
                     foreach ($enquiry->getPricing()->getExtras() as $extra) {
                         $json['enquiry'][$extra->getDescription()] = $extra->getTotalPrice();
                     }

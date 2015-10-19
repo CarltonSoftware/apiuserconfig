@@ -134,6 +134,12 @@
                 </tr>
             </tbody>
         </table>
+            
+        <div class="well" style="word-wrap: break-word;">
+            {% for route in apiRoutes %}
+            <p>{{ route }}</p>
+            {% endfor %}
+        </div>
 
     {% elseif tabsBookingException %}
         <p class="alert alert-danger">{{ tabsBookingException }}</p>
