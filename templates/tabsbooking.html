@@ -44,7 +44,7 @@
             <tbody>
                 <tr>
                     <th>Customer reference</th>
-                    <td>{{ tabsBooking.getCusref }}</td>
+                    <td><a href="{{ baseUrl }}/customer/{{ tabsBooking.getCusref }}?brandcode={{ brandcode }}">{{ tabsBooking.getCusref }}</a></td>
                 </tr>
                 <tr>
                     <th>Surname</th>
@@ -68,6 +68,10 @@
                 </tr>
             </tbody>
         </table>
+        
+        {% if customer is null %}
+            <h3>Tabs customer record not found</h3>
+        {% endif %}
 
         <h3>Payments</h3>
         <h4>Commission</h4>

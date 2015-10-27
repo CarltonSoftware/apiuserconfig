@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <form class="form-inline">
+        <div class="form-group">
+            <label for="bookingref">Customer reference</label>
+            <input type="text" class="form-control" id="bookingref" name="bookingref" value="{{ tabsBooking.getBookingRef }}">
+        </div>
+        <input type="hidden" name="brandcode" value="{{ brandcode }}">
+        <input type="submit" class="btn btn-primary" value="Find">
+    </form>
+
+    {% if customer %}
+
+        <h3>Customer</h3>
+        <table class="table table-bordered table-condensed">
+            <tbody>
+                <tr>
+                    <th>Customer reference</th>
+                    <td>{{ customer.getCusref }}</td>
+                </tr>
+                <tr>
+                    <th>Name</th>
+                    <td>{{ customer|raw }}</td>
+                </tr>
+                <tr>
+                    <th>Number of Bookings</th>
+                    <td>
+                        {{ bookings|length }}
+                        
+                        {% if bookings|length > 0 %}
+                            ({% for booking in bookings %}
+                            <a href="{{ baseUrl }}/tabsbooking?bookingref={{ booking.getBookingRef }}&brandcode={{ brandcode }}">{{ booking.getBookingRef }}</a> 
+                            {% endfor %})
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    {% elseif tabsBookingException %}
+        <p class="alert alert-danger">{{ tabsBookingException }}</p>
+    {% endif %}
+            
+    <div class="well" style="word-wrap: break-word;">
+        {% for route in apiRoutes %}
+        <p>{{ route }}</p>
+        {% endfor %}
+    </div>
+
+{% endblock %}

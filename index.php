@@ -417,10 +417,12 @@ $app->get(
 
     $tabsBookingException = false;
     $tabsBooking = null;
+    $customer = null;
     if (filter_input(INPUT_GET, 'bookingref')) {
         $bookingRef = filter_input(INPUT_GET, 'bookingref');
         try {
             $tabsBooking = \tabs\api\booking\TabsBooking::getBooking($bookingRef, $brandcode);
+            $customer = $tabsBooking->getCustomer();
         } catch (Exception $ex) {
             $tabsBookingException = $ex->getMessage();
         }
@@ -433,6 +435,7 @@ $app->get(
             'brandcode' => $brandcode,
             'tabsBooking' => $tabsBooking,
             'tabsBookingException' => $tabsBookingException,
+            'customer' => $customer,
             'apiRoutes' => \tabs\api\client\ApiClient::getApi()->getRoutes()
         )
     );
@@ -654,6 +657,7 @@ $app->get(
                 'info' => $info,
                 'brandcode' => $brandcode,
                 'property' => $property,
+                'owner' => $property->getOwner(),
                 'calendars' => $calendars,
                 'form' => $enquiryForm,
                 'priceranges' => $ranges,
@@ -671,6 +675,36 @@ $app->get(
             )
         );
     }
+});
+
+$app->get(
+    '/customer/:cusref',
+    function ($cusref) use (
+        $app, 
+        $info, 
+        $brandcode
+    ) {
+
+    $exception = false;
+    $customer = null;
+    try {
+        $customer = \tabs\api\core\Customer::create($cusref);
+    } catch (Exception $ex) {
+        $exception = $ex->getMessage();
+    }
+
+    $app->render(
+        'customer.html',
+        array(
+            'info' => $info,
+            'exception' => $exception,
+            'brandcode' => $brandcode,
+            'customer' => $customer,
+            'bookings' => ($customer) ? $customer->getBookings() : array(),
+            'apiRoutes' => \tabs\api\client\ApiClient::getApi()->getRoutes()
+        )
+    );
+
 });
 
 $app->get(

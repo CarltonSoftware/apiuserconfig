@@ -35,6 +35,24 @@
                     </tbody>
                 </table>
                 
+                <h3>Owner</h3>
+                <table class="table table-striped table-bordered table-condensed">
+                    <tbody>
+                        <tr>
+                            <td>Reference:</td>
+                            <td>{{ owner.getReference }}</td>
+                        </tr>
+                        <tr>
+                            <td>Name: </td>
+                            <td>{{ owner|raw }}</td>
+                        </tr>
+                        <tr>
+                            <td>Address: </td>
+                            <td>{{ owner.getAddress|raw }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
                 <h3>Availability <a class="btn btn-default btn-xs" href="{{ baseUrl }}/property/{{ property.getPropertyRef }}/tabsbookings?brandcode={{ brandcode }}">View Tabs bookings</a></h3>
                 <div class="availability">
                     <div class="availability_calendars availability_calendars-floated">
