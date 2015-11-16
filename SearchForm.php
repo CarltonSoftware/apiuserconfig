@@ -77,7 +77,7 @@ class SearchForm extends \aw\formfields\forms\StaticForm
             );
         }
         
-        if (count(self::$locations) > 0) {
+        if (count(self::$locations) > 0 && $brandcode != 'oc') {
             $fs->addChild(
                 self::getNewLabelAndSelect(
                     'Location',

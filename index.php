@@ -497,7 +497,8 @@ $app->get(
     
     $form = SearchForm::factory(
         array(), 
-        $formFilters
+        $formFilters,
+        $brandcode
     );
     templateForm($form);
     
@@ -671,7 +672,8 @@ $app->get(
             array(
                 'info' => $info,
                 'brandcode' => $brandcode,
-                'exception' => $ex
+                'exception' => $ex,
+                'apiRoutes' => \tabs\api\client\ApiClient::getApi()->getRoutes()
             )
         );
     }
