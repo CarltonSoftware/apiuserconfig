@@ -92,6 +92,24 @@
                     </table>
                 {% endif %}
 
+                {% if booking.getPartyDetails|length > 0 %}
+                    <h3>Party Details</h3>
+                    <table class="table table-striped table-bordered table-condensed ">
+                        <thead>
+                            <th>Name</th>
+                            <th>Age</th>
+                        </thead>
+                        <tbody>
+                    {% for partymember in booking.getPartyDetails %}
+                            <tr>
+                                <td>{{ partymember|raw }}</td>
+                                <td>{{ partymember.getAge }}</td>
+                            </tr>
+                    {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+
 
                 <h3>Price</h3>
                 <table class="table table-striped table-bordered table-condensed">

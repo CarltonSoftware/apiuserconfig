@@ -11,7 +11,8 @@
                 <tr>
                     <th>Booking reference</th>
                     <th>Customer reference</th>
-                    <th>Dates</th>
+                    <th>Status</th>
+                    <th colspan="2">Dates</th>
                 </tr>
             </thead>
             <tbody>
@@ -19,6 +20,7 @@
                     <tr>
                         <td><a href="{{ baseUrl }}/tabsbooking?bookingref={{ booking.getBookingRef }}&amp;brandcode={{ brandcode }}">{{ booking.getBookingRef }}</a></td>
                         <td>{{ booking.getCusref }} </td>
+                        <td>{{ booking.getStatus }} </td>
                         <td>{{ booking.getFromDate|date("j M Y") }} to {{ booking.getToDate|date("j M Y") }}</td>
                         <td><a class="btn btn-primary" href="{{ baseUrl }}/tabsbooking?bookingref={{ booking.getBookingRef }}&amp;brandcode={{ brandcode }}">Detail</a></td>
                     </tr>
