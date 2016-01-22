@@ -650,6 +650,12 @@ $app->get(
                 );
             }
         }
+        
+        $availableBreaksUrl = str_replace(
+            'calendar',
+            'availablebreaks',
+            $property->getCalendarUrl()
+        ) . '?' . \tabs\api\client\ApiClient::getApi()->getHmacQuery();
 
         // Render index view
         $app->render(
@@ -662,6 +668,7 @@ $app->get(
                 'calendars' => $calendars,
                 'form' => $enquiryForm,
                 'priceranges' => $ranges,
+                'availableBreaksUrl' => $availableBreaksUrl,
                 'apiRoutes' => \tabs\api\client\ApiClient::getApi()->getRoutes()
             )
         );
