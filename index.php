@@ -970,6 +970,93 @@ $app->post(
     }
 );
 
+// Define routes
+$app->get(
+    '/billing', 
+    function () use (
+        $app,
+        $info,
+        $brands,
+        $brandcode
+    ) {
+        $period = mktime(0, 0, 0, date('m'), 1, date('Y'));
+        
+        if (filter_input(INPUT_GET, 'period') && strtotime(filter_input(INPUT_GET, 'period'))) {
+            $period = strtotime(filter_input(INPUT_GET, 'period'));
+        }
+        
+        $periods = array();
+        for ($i = 1; $i <= 12; $i++) {
+            $periods[] = mktime(0, 0, 0, $i, 1, date('Y'));
+        }
+    
+        // Render index view
+        $app->render(
+            'billing.html',
+            array(
+                'info' => $info,
+                'brandcode' => $brandcode,
+                'brands' => $brands,
+                'period' => $period,
+                'periods' => $periods
+            )
+        );
+    }
+);
+
+// Define routes
+$app->post(
+    '/billing', 
+    function () use (
+        $app,
+        $brandcode
+    ) {
+        $period = mktime(0, 0, 0, date('m'), 1, date('Y'));
+        
+        if (filter_input(INPUT_GET, 'period') && strtotime(filter_input(INPUT_GET, 'period'))) {
+            $period = strtotime(filter_input(INPUT_GET, 'period'));
+        }
+        
+        
+        $freeKeys = array(
+            'carltonsoftware'
+        );
+        $freeRequests = 0;
+        $paidRequests = 0;
+        $year = date('Y', $period);
+        $month = date('n', $period);
+
+        foreach (\tabs\api\core\ApiUser::getUsers() as $user) {
+            try {
+                $requests = \tabs\api\utility\Utility::getRequestCount($user->getKey());
+                \tabs\api\utility\Utility::resetCache();
+                
+                if (in_array($user->getKey(), $freeKeys)) {                
+                    $freeRequests += $requests->{$year}->months->{$month}->total;
+                } else {
+                    $paidRequests += $requests->{$year}->months->{$month}->total;
+                }
+
+                unset($requests);
+            } catch (Exception $ex) {
+
+            }
+        }
+    
+        die(
+            json_encode(
+                array(
+                    'brandcode' => $brandcode,
+                    'paid' => $paidRequests,
+                    'free' => $freeRequests,
+                    'year' => $year,
+                    'month' => $month
+                )
+            )
+        );
+    }
+);
+
 // Run app
 $app->run();
 
