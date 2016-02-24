@@ -1067,6 +1067,8 @@ $app->get(
         $brandcode
     ) {
     
+        asort($brands);
+    
         // Render index view
         $app->render(
             'propertynumbers.html',
