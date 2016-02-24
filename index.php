@@ -1057,6 +1057,39 @@ $app->post(
     }
 );
 
+// Define routes
+$app->get(
+    '/propertynumbers', 
+    function () use (
+        $app,
+        $info,
+        $brands,
+        $brandcode
+    ) {
+    
+        // Render index view
+        $app->render(
+            'propertynumbers.html',
+            array(
+                'info' => $info,
+                'brandcode' => $brandcode,
+                'brands' => $brands
+            )
+        );
+    }
+);
+
+// Define routes
+$app->post(
+    '/propertynumbers', 
+    function () use (
+        $app,
+        $info
+    ) {
+        die(json_encode(array('total' => $info->getTotalNumberOfProperties())));
+    }
+);
+
 // Run app
 $app->run();
 

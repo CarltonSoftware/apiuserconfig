@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div ng-app="numbersApp" ng-controller="NumberController">
+        
+        <h1>Total number of properties in each api</h1>
+        
+        <table class="table table-striped table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>Brandcode</th>
+                    <th>Brand</th>
+                    <th>Total Properties</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="brand in brands">
+                    <td ng-bind-html="brand.brandcode"></td>
+                    <td ng-bind-html="brand.name"></td>
+                    <td ng-bind-html="brand.total"></td>
+                </tr>
+            </tbody>
+        </table>
+        
+    </div>
+
+{% endblock %}
+
+{% block footerjavascript %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.3/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-sanitize.js"></script>
+    <script>
+        (function() {
+            
+            var app = angular.module('numbersApp', ['ngSanitize'])
+            .config(function($interpolateProvider) {
+                $interpolateProvider.startSymbol('~~');
+                $interpolateProvider.endSymbol('~~');
+            }).controller('NumberController', ['$scope', '$log', '$http', function($scope, $log, $http) {
+                
+                $scope.brands = [
+                    {% for brand, name in brands %}
+                        { 
+                            'name': '{{ name }}',
+                            'brandcode': '{{ brand }}',
+                            'total': 0
+                        },
+                    {% endfor %}
+                ];
+                
+                $scope.loaded = 0;                
+                $scope.loading = function() {
+                    return $scope.brands.length !== $scope.loaded;
+                };              
+                $scope.disabled = function() {
+                    return $scope.loaded !== 0;
+                };                   
+                $scope.getPercentLoaded = function() {
+                    return  Math.round(($scope.brands.length > 0) ? ($scope.loaded / $scope.brands.length) * 100 : 0);
+                };
+                
+                var addResult = function() {
+                    if ($scope.loading()) {
+                        
+                        var b = $scope.brands[$scope.loaded];
+                        
+                        $http({
+                            method : 'POST',
+                            url : '?brandcode=' + b.brandcode
+                        }).success(function(res) {
+                            $scope.brands[$scope.loaded].total = res.total;
+                            $scope.loaded++;
+                            addResult();
+
+                        }).error(function(error){
+
+                            $scope.loaded++;
+                            addResult();
+                        });
+                    }
+                };
+                
+                addResult();
+            }]);
+            
+        })();
+    </script>
+{% endblock %}

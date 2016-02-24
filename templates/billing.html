@@ -6,7 +6,7 @@
         
         <h1>Billing for ~~ appDate() | date:'yyyy/M' ~~</h1>
         
-        <select ng-options="period.id as period.label for period in periods" ng-model="initalperiod" class="form-control" ng-disabled="loading();"></select>
+        <select ng-options="period.id as period.label for period in periods" ng-model="initalperiod" class="form-control" ng-disabled="disabled();" ng-change="update();"></select>
                 
         <div class="progress" ng-show="loaded > 0" style="margin: 1em 0;">
             <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: ~~ getPercentLoaded() ~~%;">
@@ -68,7 +68,10 @@
                 $scope.loaded = 0;                
                 $scope.loading = function() {
                     return $scope.brands.length !== $scope.loaded;
-                };                
+                };              
+                $scope.disabled = function() {
+                    return $scope.loaded !== 0;
+                };                   
                 $scope.getPercentLoaded = function() {
                     return  Math.round(($scope.brands.length > 0) ? ($scope.loaded / $scope.brands.length) * 100 : 0);
                 };
@@ -82,6 +85,7 @@
                     if ($scope.loading()) {
                         
                         var b = $scope.brands[$scope.loaded];
+                        $scope.loaded++;
                         
                         $http({
                             method : 'POST',
@@ -94,7 +98,6 @@
                                 'total': res.paid + res.free
                             });
 
-                            $scope.loaded++;
                             addResult();
 
                         }).error(function(error){
@@ -106,7 +109,6 @@
                                 'total': 0
                             });
 
-                            $scope.loaded++;
                             addResult();
                         });
                     }

@@ -140,6 +140,16 @@
                             <td>Total</td>
                             <td>£{{ booking.getTotalPrice }}</td>
                         </tr>
+                        {% if booking.getPricing.getSecurityDeposit > 0 %}
+                        <tr>
+                            <td>Security Deposit</td>
+                            <td>£{{ booking.getPricing.getSecurityDeposit }}</td>
+                        </tr>
+                        <tr>
+                            <td>Total</td>
+                            <td>£{{ booking.getFullPrice }}</td>
+                        </tr>
+                        {% endif %}
                     </tbody>
                 </table>
 
